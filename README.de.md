@@ -175,89 +175,186 @@ Platine deuten darauf — dann externe Versorgung nutzen.
 
 ## Effekt-Tabelle — alle 36 Rahmen
 
-Spalte *Aufbau*: **voll** = beide Scheinwerfer und Pace-Car angeschlossen, belastbar ·
-**1 LED** = nur eine LED angeschlossen, möglicherweise unvollständig. Das Polizeilicht
-war in keiner Messung angeschlossen.
+Gemessen am 2026-09-01 im Direktbetrieb: zwei `-A`-Platinen mit vollständigem
+Lichtsatz, jede an einem eigenen GPIO, beide im selben Rahmen. Alle 36 Rahmen
+einzeln durchgesteppt, danach die gleich aussehenden Beschreibungen im direkten
+A/B-Vergleich geprüft.
 
-„eine Seite" / „andere Seite" sind Beobachtungsbeschreibungen, **nicht** die physische
-Fahrzeugseite — welcher Scheinwerfer an welchem Ausgang steckte, ist nicht dokumentiert.
+**36 Eingangsrahmen, 35 verschiedene Codes — aber nur 11 verschiedene Effekte.**
 
-| lang bei | -B-Rahmen | -A-Code | Effekt | Aufbau |
-|---|---|---|---|---|
-| 0,1 | `00110101010` | `111000000` | kurzes Aufblinken aller LEDs | voll |
-| 0,2 | `00100101010` | `110100000` | Doppelblinken aller LEDs | voll |
-| 0,3 | `00101101010` | `110010000` | schnelles Blinken aller LEDs | voll |
-| 0,4 | `00101001010` | `110001000` | schnelles Blinken aller LEDs | voll |
-| 0,5 | `00101011010` | `110000100` | schnelles Blinken aller LEDs | voll |
-| 0,6 | `00101010010` | `110000011` | schnelles Blinken aller LEDs | voll |
-| 0,7 | `00101010110` | `110000001` | schnelles Blinken aller LEDs | voll |
-| 0,8 | `00101010100` | `110000000` | schnelles Blinken aller LEDs | voll |
-| 1,2 | `01100101010` | `101100000` | Doppelblinken, Pace-Car dauerhaft | voll |
-| 1,3 | `01101101010` | `101010000` | kurzes Aufblinken aller LEDs | voll |
-| 1,4 | `01101001010` | `101001000` | kurzes Blinken, dann lange Pause | voll |
-| 1,5 | `01101011010` | `101000100` | wie 1,4 | voll |
-| 1,6 | `01101010010` | `101000011` | alles blinkt kurz, mit Pause | voll |
-| 1,7 | `01101010110` | `101000001` | **langes** Aufblinken aller LEDs | voll |
-| 1,8 | `01101010100` | `101000000` | kurzes Aufblinken aller LEDs | voll |
-| 2,3 | `01001101010` | `100110000` | Doppelblinken aller LEDs | voll |
-| 2,4 | `01001001010` | `100101000` | Blinken | 1 LED |
-| 2,5 | `01001011010` | `100100100` | **Blinken — Werkszustand / Failsafe** | 1 LED |
-| 2,6 | `01001010010` | `100100011` | alles blinkt | voll |
-| 2,7 | `01001010110` | `100100001` | Doppelblinken aller LEDs | voll |
-| 2,8 | `01001010100` | `100100000` | Doppelblinken aller LEDs | voll |
-| 3,4 | `01011001010` | `100011000` | **roter Ring Fade**, weiß + Pace-Car dauerhaft | voll |
-| 3,5 | `01011011010` | `100010100` | **roter Ring Lauflicht**, weiß aus, Pace-Car dauerhaft | voll |
-| 3,6 | `01011010010` | `100010011` | **Blinker, eine Seite** | voll |
-| 3,7 | `01011010110` | `100010001` | **Blinker, andere Seite** | voll |
-| 3,8 | `01011010100` | `100010000` | roter Ring aus, nur weiß | voll |
-| 4,5 | `01010011010` | `100001100` | **rotes Dauerleuchten** | voll |
-| 4,6 | `01010010010` | `100001011` | Blinker, eine Seite | voll |
-| 4,7 | `01010010110` | `100001001` | Blinker, andere Seite | voll |
-| 4,8 | `01010010100` | `100001000` | Dauerlicht auf allen Leuchten | voll |
-| 5,6 | `01010110010` | `100000111` | Blinker, eine Seite | voll |
-| 5,7 | `01010110110` | `100000101` | Blinker, andere Seite | voll |
-| 5,8 | `01010110100` | `100000100` | **roter Ring Lauflicht**, weiß an | voll |
-| 6,7 | `01010100110` | `100000011` | Dauerlicht auf allen Leuchten | voll |
-| 6,8 | `01010100100` | `100000011` | identischer Code wie 6,7 | voll |
-| 7,8 | `01010101100` | `100000001` | Blinker, andere Seite | voll |
+### Kein links/rechts, kein Pace-Car
 
-### Die nützlichste Familie: erste Position 3
+Beide `-A` bekommen denselben Code und zeigen dasselbe. Eine Seitenzuordnung gibt
+es im `-A`-Protokoll nicht.
 
-Dort steuert die zweite Position den **roten Ring**:
+Frühere Fassungen dieser Tabelle nannten Effekte wie „Blinker, eine Seite" und
+„Pace-Car dauerhaft". Beides waren Eigenschaften der **`-B`**: sie hatte
+kanalgebundene Ausgänge und trieb das Pace-Car-Licht aus eigener Kraft. Wer die
+`-A` direkt ansteuert, hat weder das eine noch das andere. Die Tabelle beschreibt
+deshalb ausschließlich, was **eine `-A`-Platine** tut.
 
-| lang bei | roter Ring |
+| lang bei | -B-Rahmen | -A-Code | Effekt |
+|---|---|---|---|
+| 0,1 | `00110101010` | `111000000` | kurzes Aufblinken aller LEDs |
+| 0,2 | `00100101010` | `110100000` | Doppelblinken aller LEDs |
+| 0,3 | `00101101010` | `110010000` | schnelles Blinken aller LEDs |
+| 0,4 | `00101001010` | `110001000` | schnelles Blinken aller LEDs |
+| 0,5 | `00101011010` | `110000100` | schnelles Blinken aller LEDs |
+| 0,6 | `00101010010` | `110000011` | schnelles Blinken aller LEDs |
+| 0,7 | `00101010110` | `110000001` | schnelles Blinken aller LEDs |
+| 0,8 | `00101010100` | `110000000` | schnelles Blinken aller LEDs |
+| 1,2 | `01100101010` | `101100000` | Doppelblinken aller LEDs |
+| 1,3 | `01101101010` | `101010000` | kurzes Aufblinken aller LEDs |
+| 1,4 | `01101001010` | `101001000` | kurzes Blinken, dann lange Pause |
+| 1,5 | `01101011010` | `101000100` | kurzes Blinken, dann lange Pause |
+| 1,6 | `01101010010` | `101000011` | kurzes Blinken, dann lange Pause |
+| 1,7 | `01101010110` | `101000001` | kurzes Blinken, dann lange Pause |
+| 1,8 | `01101010100` | `101000000` | kurzes Blinken, dann lange Pause |
+| 2,3 | `01001101010` | `100110000` | Doppelblinken aller LEDs |
+| 2,4 | `01001001010` | `100101000` | Doppelblinken aller LEDs |
+| 2,5 | `01001011010` | `100100100` | Doppelblinken aller LEDs |
+| 2,6 | `01001010010` | `100100011` | Doppelblinken aller LEDs |
+| 2,7 | `01001010110` | `100100001` | Doppelblinken aller LEDs |
+| 2,8 | `01001010100` | `100100000` | Doppelblinken aller LEDs |
+| 3,4 | `01011001010` | `100011000` | **roter Ring Fade, weiß an** |
+| 3,5 | `01011011010` | `100010100` | **roter Ring Lauflicht, weiß blinkt** |
+| 3,6 | `01011010010` | `100010011` | Dauerlicht auf allen Leuchten |
+| 3,7 | `01011010110` | `100010001` | Blinken aller LEDs |
+| 3,8 | `01011010100` | `100010000` | **roter Ring aus, nur weiß** |
+| 4,5 | `01010011010` | `100001100` | **rotes Dauerleuchten, weiß aus** |
+| 4,6 | `01010010010` | `100001011` | Dauerlicht auf allen Leuchten |
+| 4,7 | `01010010110` | `100001001` | Blinken aller LEDs |
+| 4,8 | `01010010100` | `100001000` | Dauerlicht auf allen Leuchten |
+| 5,6 | `01010110010` | `100000111` | Dauerlicht auf allen Leuchten |
+| 5,7 | `01010110110` | `100000101` | Blinken aller LEDs |
+| 5,8 | `01010110100` | `100000100` | **roter Ring Lauflicht, weiß an** |
+| 6,7 | `01010100110` | `100000011` | Dauerlicht auf allen Leuchten |
+| 6,8 | `01010100100` | `100000011` | Dauerlicht auf allen Leuchten |
+| 7,8 | `01010101100` | `100000001` | Blinken aller LEDs |
+
+Fett hervorgehoben sind die fünf Rahmen, die jeweils als **einziger** ihren Effekt
+liefern. Alles andere ist mehrfach belegt.
+
+### Die Struktur dahinter
+
+Die erste lange Position wählt die **Familie**, die zweite den Effekt darin:
+
+| erste Position | Familie |
 |---|---|
-| 3,4 | Fade / Atemlicht |
-| 3,5 | Lauflicht |
-| 3,6 | eine Seite blinkt |
-| 3,7 | andere Seite blinkt |
-| 3,8 | aus, nur weiß |
+| 0 | schnelles Blinken aller LEDs |
+| 1 | kurzes Blinken, dann lange Pause |
+| 2 | Doppelblinken aller LEDs |
+| 3, 4, 5 | roter Ring und weiße LED **getrennt** |
+| 6 | Dauerlicht |
+| 7 | Blinken aller LEDs |
 
-### Die beiden Lauflicht-Rahmen
+Bei erster Position 0, 1 oder 2 wirkt die zweite nur, wenn sie unmittelbar
+benachbart ist — `0,1` und `1,3` geben ein kurzes Aufblinken, `0,2` und `1,2` ein
+Doppelblinken, alles Weitere bleibt bei der Familie.
 
-`3,5` und `5,8` fahren **dasselbe** Wandermuster auf dem roten Ring, auf beiden
-Scheinwerfern. Sie unterscheiden sich in genau einer Sache:
+Sind **beide** Positionen ≥ 3, wird es interessant, und die Positionen 6 und 7
+überschreiben die Familie:
+
+| zweite Position | Wirkung, wenn erste ≥ 3 |
+|---|---|
+| 6 | Dauerlicht auf allen Leuchten — immer |
+| 7 | Blinken aller LEDs — immer |
+| 4, 5, 8 | der spezifische Effekt aus roter Ring + weiße LED |
+
+Damit bleiben genau sechs Rahmen, die den roten Ring und die weiße LED
+unabhängig behandeln:
 
 | lang bei | roter Ring | weiße LED |
 |---|---|---|
-| 3,5 | Lauflicht | **aus** |
+| 3,4 | Fade / Atemlicht | an |
+| 3,5 | Lauflicht | **blinkt** |
+| 3,8 | aus | an |
+| 4,5 | dauerhaft an | **aus** |
+| 4,8 | dauerhaft an | an |
+| 5,8 | Lauflicht | an |
+
+`4,8` fällt dabei mit dem Dauerlicht zusammen, obwohl es weder 6 noch 7 enthält.
+
+### Die beiden Lauflicht-Rahmen
+
+`3,5` und `5,8` fahren dasselbe Wandermuster auf dem roten Ring und unterscheiden
+sich nur in der weißen LED:
+
+| lang bei | roter Ring | weiße LED |
+|---|---|---|
+| 3,5 | Lauflicht | **blinkt** |
 | 5,8 | Lauflicht | **an** |
+
+Bei `3,5` blinkt die weiße LED, sie ist nicht aus — eine frühere Fassung dieses
+Dokuments hatte das falsch, weil damals nur eine LED angeschlossen war.
 
 **Zur Benennung:** Das wandernde Muster auf dem Ring heißt in diesem Dokument
 durchgehend **Lauflicht** — in der englischen Fassung *chase*, weil „running light"
-dort das Tagfahrlicht bezeichnen würde. Gelegentlich findet man dafür auch den Namen
-*Knight Rider*.
+dort das Tagfahrlicht bezeichnen würde. Gelegentlich findet man dafür auch den
+Namen *Knight Rider*.
 
-### Standbilder und Animationen unterscheiden
+### Die Abschlusslänge ist funktional
 
-Wer zwei Codes gegeneinander takten will, ohne dass etwas animiert läuft, muss
-**Standbilder** wählen. `4,8` ist „alles an", `4,5` ist „nur roter Ring, weiß aus" —
-beides stehende Bilder. `3,5` schaltet weiß ebenfalls ab, bringt aber die
-Lauflicht-Animation des Rings mit, die die `-A` selbst erzeugt und die sich nicht
-unterdrücken lässt.
+Der Impuls nach dem achten Bit ist 1 oder 3 Einheiten lang — und diese Länge ist
+Teil des Codes, nicht bloß eine Rahmenmarke. Drei Paare belegen es: gleiche acht
+Bits, unterschiedliche Abschlusslänge, unterschiedlicher Effekt.
+
+| 8 Bit | Abschluss | lang bei | Effekt |
+|---|---|---|---|
+| `10001000` | H1 | 3,8 | roter Ring aus, nur weiß |
+| `10001000` | H3 | 3,7 | Blinken aller LEDs |
+| `10000100` | H1 | 4,8 | Dauerlicht |
+| `10000100` | H3 | 4,7 | Blinken aller LEDs |
+| `10000010` | H1 | 5,8 | roter Ring Lauflicht, weiß an |
+| `10000010` | H3 | 5,7 | Blinken aller LEDs |
+
+Bei den drei entsprechenden Paaren mit erster Position 0, 1 oder 2 macht die
+Abschlusslänge **keinen** Unterschied — dort dominiert die Familie.
+
+Wer die `-A` selbst ansteuert, muss die Abschlusslänge also mit übertragen.
+
+### Die Zeitgeber der -A laufen frei und unabhängig
+
+Versuch: gemeinsamer Reset des Controllers, beide `-A` gingen dunkel und bekamen
+denselben Startrahmen im selben Moment. Danach ein konstanter Blinkcode auf beide
+Seiten.
+
+**Ergebnis: sie blinken unterschiedlich schnell.** Nicht nur versetzt, sondern mit
+verschiedener Frequenz.
+
+Das Protokoll wählt den **Effekt**, nicht den **Takt**. Jede `-A` erzeugt ihre
+Animation aus einem eigenen, ungenauen Zeitgeber. Für Nachbauer heißt das:
+
+- **Synchrone Blinker sind über die Effektcodes nicht erreichbar.** Wer sie
+  braucht, muss den Takt im Controller machen: einen *stehenden* Effekt wählen
+  und ihn gegen den AUS-Code takten. Dann kommt die Zeit vom Controller, und
+  beide Seiten schalten im selben Rahmen.
+- Die Blinkraten in der Tabelle beschreiben **eine** Platine und sind keine
+  zugesicherte Größe.
+- Zwei blinkende Codes lassen sich per Umschalten nicht gegeneinander
+  vergleichen — der Versatz der Platinen überdeckt den Unterschied. `3,7` gegen
+  `4,7` ließ sich deshalb nicht trennen; beide zeigen Blinken aller LEDs, ob die
+  Rate identisch ist, ist offen.
+
+Das erklärt vermutlich, warum die Originalanlage die Blinker über getrennte
+`-B`-Ausgänge gemacht hat und nicht über Effekte: dort schaltete die `-B` ihre
+Ausgänge, der Takt kam also aus einer einzigen Quelle.
+
+### Ein Codewechsel setzt die Animation zurück
+
+Wechselt der gesendete Code, beginnt die `-A` ihre Animation von vorn. Ein
+Lauflicht, das im Sekundentakt neu angestoßen wird, bricht deshalb sichtbar ab
+und startet neu, statt durchzulaufen.
+
+Zwei Konsequenzen:
+
+- Wer einen Effekt sauber laufen sehen will, hält den Code **konstant**.
+- Wer zwei Zustände gegeneinander taktet, nimmt **stehende** Bilder: `4,5`
+  (roter Ring an, weiß aus), `4,8` (alles an) und der AUS-Code sind stehend.
+  `3,5` bringt dagegen die Lauflicht-Animation mit, die sich nicht unterdrücken
+  lässt und bei jedem Takt neu beginnt.
 
 ---
-
 ## Verworfene Thesen
 
 Aufgeführt, damit sie niemand erneut prüft:
@@ -265,8 +362,18 @@ Aufgeführt, damit sie niemand erneut prüft:
 - **„11 unabhängige Bits, Bits 2/6/7 wirkungslos"** — widerlegt. Bit 2 und 3 gemeinsam
   erzeugt einen 4-Einheiten-Impuls und damit einen ungültigen Rahmen. Das Protokoll
   überträgt Impulsbreiten, nicht ein Bit je Einheitszeit.
-- **„Erste lange Position wählt die Farbe, zweite den Effekt"** — widerlegt durch die
-  Aliase (0,6)==(4,6) und (3,7)==(4,7).
+- **„Erste lange Position wählt die Farbe, zweite den Effekt"** — in dieser Form falsch,
+  in abgewandelter Form richtig. Die erste Position wählt keine *Farbe*, sondern die
+  **Familie**, und die zweite ist nicht frei, weil 6 und 7 die Familie überschreiben.
+  Die Aliase (0,6)==(4,6) und (3,7)==(4,7), mit denen die These damals verworfen wurde,
+  sind genau diese Überschreibung. Siehe [Die Struktur dahinter](#die-struktur-dahinter).
+- **„Blinker eine Seite / andere Seite" und „Pace-Car dauerhaft" sind Effekte der `-A`"**
+  — falsch. Beides waren Eigenschaften der `-B`, die kanalgebundene Ausgänge hatte. Zwei
+  `-A` am selben Rahmen zeigen immer dasselbe.
+- **„Bei `3,5` ist die weiße LED aus"** — falsch, sie **blinkt**. Der Fehler entstand,
+  weil bei der ersten Messreihe nur eine einzige LED angeschlossen war.
+- **„Zwei `-A` blinken synchron, wenn sie denselben Code bekommen"** — widerlegt. Sie
+  blinken auch nach gemeinsamem Reset unterschiedlich **schnell**.
 - **„(6,7) ist Lauflicht ohne Weiß"** — widerlegt, es ist Dauerleuchten.
 - **„Die `-F` ist ein Protokoll-Übersetzer"** — falsch. Sie ist Spannungsregler und
   Rücklicht-Treiber und leitet das Signal durch.
@@ -304,6 +411,24 @@ Fallstricke, die man kennen sollte:
 Überspannungsproblem oder ein defekter Analysator aussahen. Die Ursache war ein
 **Lade-USB-Kabel ohne Datenleitungen.** Brechen Aufnahmen ab, tausche zuerst das Kabel.
 
+### Die zweite Messreihe: alle 36 Rahmen am vollständigen Lichtsatz
+
+Die erste Effekt-Tabelle entstand mit **einer einzigen angeschlossenen LED** und war
+deshalb an mehreren Stellen falsch. Am 2026-09-01 wurde sie neu aufgenommen, mit
+vollständigem Lichtsatz an zwei `-A`-Platinen und einem Skript, das alle 36 Rahmen
+einzeln durchsteppt und jeden hält, bis er bestätigt ist. Was sich dadurch geändert hat:
+
+- „Blinker eine Seite / andere Seite" und „Pace-Car dauerhaft" waren Eigenschaften der
+  `-B`, keine Effekte
+- bei `3,5` **blinkt** die weiße LED, sie ist nicht aus
+- sechs getrennt geführte Rahmen sind ein und dasselbe Dauerlicht
+- die Abschlusslänge erwies sich als funktional
+- die Blinkzeitgeber der beiden Platinen laufen gegeneinander weg
+
+Die Lehre gilt allgemein: **eine Effekt-Tabelle mit unvollständigem Lichtsatz ist nicht
+belastbar**, weil Modi, die sich nur auf den fehlenden Leuchten unterscheiden, identisch
+aussehen.
+
 ---
 
 ## Lizenz
@@ -314,9 +439,9 @@ anpassen, darauf aufbauen; nur der Copyright-Hinweis muss mit.
 Korrekturen und Ergänzungen willkommen — bitte als Issue. Offen ist insbesondere:
 
 - die 256 Codes ohne Startbit wurden nie getestet
-- die physische Fahrzeugseite von „eine Seite" / „andere Seite" ist nicht dokumentiert
-- die Effektbeschreibungen zu `2,4` und `2,5` stammen aus einer Messung mit nur einer
-  angeschlossenen LED und sind möglicherweise unvollständig
+- ob `3,7`, `4,7`, `5,7` und `7,8` mit *derselben Rate* blinken, ist offen — der Eigendrift
+  der Platinen macht das schwer messbar
 - wozu Pin 2 dient, ist unbekannt
+- die Widerstandswerte auf der `-A` und die Stellung von `SB1` wurden nie ausgelesen
 
 English version: [README.md](README.md)

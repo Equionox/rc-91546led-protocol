@@ -171,89 +171,183 @@ that way — use an external supply then.
 
 ## Effect table — all 36 frames
 
-Column *setup*: **full** = both headlights and the pace-car lights connected, dependable ·
-**1 LED** = only a single LED connected, possibly incomplete. The police light was never
-connected in any measurement.
+Measured 2026-09-01 driving the `-A` boards directly: two boards with a complete set
+of lamps, each on its own GPIO, both inside the same frame. All 36 frames stepped
+through one at a time, then every description that looked the same as another one
+checked by direct A/B comparison.
 
-"one side" / "other side" are descriptions of what was observed, **not** the physical
-vehicle side — which headlight sat on which output was not recorded.
+**36 input frames, 35 distinct codes — but only 11 distinct effects.**
 
-| long at | -B frame | -A code | Effect | Setup |
-|---|---|---|---|---|
-| 0,1 | `00110101010` | `111000000` | brief flash, all LEDs | full |
-| 0,2 | `00100101010` | `110100000` | double flash, all LEDs | full |
-| 0,3 | `00101101010` | `110010000` | fast blink, all LEDs | full |
-| 0,4 | `00101001010` | `110001000` | fast blink, all LEDs | full |
-| 0,5 | `00101011010` | `110000100` | fast blink, all LEDs | full |
-| 0,6 | `00101010010` | `110000011` | fast blink, all LEDs | full |
-| 0,7 | `00101010110` | `110000001` | fast blink, all LEDs | full |
-| 0,8 | `00101010100` | `110000000` | fast blink, all LEDs | full |
-| 1,2 | `01100101010` | `101100000` | double flash, pace-car steady | full |
-| 1,3 | `01101101010` | `101010000` | brief flash, all LEDs | full |
-| 1,4 | `01101001010` | `101001000` | short blink, then long pause | full |
-| 1,5 | `01101011010` | `101000100` | as 1,4 | full |
-| 1,6 | `01101010010` | `101000011` | all blink briefly, with pause | full |
-| 1,7 | `01101010110` | `101000001` | **long** flash, all LEDs | full |
-| 1,8 | `01101010100` | `101000000` | brief flash, all LEDs | full |
-| 2,3 | `01001101010` | `100110000` | double flash, all LEDs | full |
-| 2,4 | `01001001010` | `100101000` | blink | 1 LED |
-| 2,5 | `01001011010` | `100100100` | **blink — factory default / failsafe** | 1 LED |
-| 2,6 | `01001010010` | `100100011` | everything blinks | full |
-| 2,7 | `01001010110` | `100100001` | double flash, all LEDs | full |
-| 2,8 | `01001010100` | `100100000` | double flash, all LEDs | full |
-| 3,4 | `01011001010` | `100011000` | **red ring fade**, white + pace-car steady | full |
-| 3,5 | `01011011010` | `100010100` | **red ring chase**, white off, pace-car steady | full |
-| 3,6 | `01011010010` | `100010011` | **indicator, one side** | full |
-| 3,7 | `01011010110` | `100010001` | **indicator, other side** | full |
-| 3,8 | `01011010100` | `100010000` | red ring off, white only | full |
-| 4,5 | `01010011010` | `100001100` | **steady red** | full |
-| 4,6 | `01010010010` | `100001011` | indicator, one side | full |
-| 4,7 | `01010010110` | `100001001` | indicator, other side | full |
-| 4,8 | `01010010100` | `100001000` | steady light on all lamps | full |
-| 5,6 | `01010110010` | `100000111` | indicator, one side | full |
-| 5,7 | `01010110110` | `100000101` | indicator, other side | full |
-| 5,8 | `01010110100` | `100000100` | **red ring chase**, white on | full |
-| 6,7 | `01010100110` | `100000011` | steady light on all lamps | full |
-| 6,8 | `01010100100` | `100000011` | same code as 6,7 | full |
-| 7,8 | `01010101100` | `100000001` | indicator, other side | full |
+### No left/right, and no pace-car
 
-### The most useful family: first position 3
+Both `-A` boards receive the same code and show the same thing. There is no notion
+of a side in the `-A` protocol.
 
-There the second position controls the **red ring**:
+Earlier versions of this table listed effects such as "indicator, one side" and
+"pace-car steady". Both were properties of the **`-B`**: it had per-channel outputs
+and drove the pace-car lights itself. If you drive the `-A` directly you get
+neither. The table below therefore describes only what **one `-A` board** does.
 
-| long at | red ring |
+| long at | -B frame | -A code | Effect |
+|---|---|---|---|
+| 0,1 | `00110101010` | `111000000` | brief flash, all LEDs |
+| 0,2 | `00100101010` | `110100000` | double flash, all LEDs |
+| 0,3 | `00101101010` | `110010000` | fast blink, all LEDs |
+| 0,4 | `00101001010` | `110001000` | fast blink, all LEDs |
+| 0,5 | `00101011010` | `110000100` | fast blink, all LEDs |
+| 0,6 | `00101010010` | `110000011` | fast blink, all LEDs |
+| 0,7 | `00101010110` | `110000001` | fast blink, all LEDs |
+| 0,8 | `00101010100` | `110000000` | fast blink, all LEDs |
+| 1,2 | `01100101010` | `101100000` | double flash, all LEDs |
+| 1,3 | `01101101010` | `101010000` | brief flash, all LEDs |
+| 1,4 | `01101001010` | `101001000` | short blink, then long pause |
+| 1,5 | `01101011010` | `101000100` | short blink, then long pause |
+| 1,6 | `01101010010` | `101000011` | short blink, then long pause |
+| 1,7 | `01101010110` | `101000001` | short blink, then long pause |
+| 1,8 | `01101010100` | `101000000` | short blink, then long pause |
+| 2,3 | `01001101010` | `100110000` | double flash, all LEDs |
+| 2,4 | `01001001010` | `100101000` | double flash, all LEDs |
+| 2,5 | `01001011010` | `100100100` | double flash, all LEDs |
+| 2,6 | `01001010010` | `100100011` | double flash, all LEDs |
+| 2,7 | `01001010110` | `100100001` | double flash, all LEDs |
+| 2,8 | `01001010100` | `100100000` | double flash, all LEDs |
+| 3,4 | `01011001010` | `100011000` | **red ring fade, white on** |
+| 3,5 | `01011011010` | `100010100` | **red ring chase, white blinking** |
+| 3,6 | `01011010010` | `100010011` | steady light on all lamps |
+| 3,7 | `01011010110` | `100010001` | blink, all LEDs |
+| 3,8 | `01011010100` | `100010000` | **red ring off, white only** |
+| 4,5 | `01010011010` | `100001100` | **red ring steady, white off** |
+| 4,6 | `01010010010` | `100001011` | steady light on all lamps |
+| 4,7 | `01010010110` | `100001001` | blink, all LEDs |
+| 4,8 | `01010010100` | `100001000` | steady light on all lamps |
+| 5,6 | `01010110010` | `100000111` | steady light on all lamps |
+| 5,7 | `01010110110` | `100000101` | blink, all LEDs |
+| 5,8 | `01010110100` | `100000100` | **red ring chase, white on** |
+| 6,7 | `01010100110` | `100000011` | steady light on all lamps |
+| 6,8 | `01010100100` | `100000011` | steady light on all lamps |
+| 7,8 | `01010101100` | `100000001` | blink, all LEDs |
+
+The five frames in bold are the ones that are the **only** frame producing their
+effect. Everything else is reachable by more than one frame.
+
+### The structure behind it
+
+The first long position picks the **family**, the second picks the effect within it:
+
+| first position | family |
 |---|---|
-| 3,4 | fade / breathing |
-| 3,5 | chase |
-| 3,6 | one side blinks |
-| 3,7 | other side blinks |
-| 3,8 | off, white only |
+| 0 | fast blink, all LEDs |
+| 1 | short blink, then long pause |
+| 2 | double flash, all LEDs |
+| 3, 4, 5 | red ring and white LED treated **separately** |
+| 6 | steady light |
+| 7 | blink, all LEDs |
 
-### The two chase frames
+With a first position of 0, 1 or 2 the second position only matters when it is
+immediately adjacent — `0,1` and `1,3` give a brief flash, `0,2` and `1,2` a double
+flash, everything else stays with the family.
 
-`3,5` and `5,8` run the **same** scan on the red ring, on both headlights. They differ
-in exactly one thing:
+When **both** positions are ≥ 3 it gets interesting, and positions 6 and 7 override
+the family:
+
+| second position | effect when first is ≥ 3 |
+|---|---|
+| 6 | steady light on all lamps — always |
+| 7 | blink, all LEDs — always |
+| 4, 5, 8 | the specific red-ring + white-LED effect |
+
+That leaves exactly six frames that treat the red ring and the white LED
+independently:
 
 | long at | red ring | white LED |
 |---|---|---|
-| 3,5 | chase | **off** |
+| 3,4 | fade / breathing | on |
+| 3,5 | chase | **blinking** |
+| 3,8 | off | on |
+| 4,5 | steady on | **off** |
+| 4,8 | steady on | on |
+| 5,8 | chase | on |
+
+`4,8` coincides with the steady-light effect even though it contains neither 6 nor 7.
+
+### The two chase frames
+
+`3,5` and `5,8` run the same travelling pattern on the red ring and differ only in
+the white LED:
+
+| long at | red ring | white LED |
+|---|---|---|
+| 3,5 | chase | **blinking** |
 | 5,8 | chase | **on** |
 
-**On terminology:** the travelling pattern on the ring is called a **chase** throughout
-this document — the German version calls it *Lauflicht*. It is deliberately **not**
-called "running light", because in an automotive context that means daytime running
-lamps, something entirely different. You will also see this kind of effect called
-*Knight Rider*.
+On `3,5` the white LED blinks, it is not off — an earlier version of this document
+had that wrong, because only a single LED was connected at the time.
 
-### Steady images vs. animations
+**On terminology:** the travelling pattern on the ring is called a **chase**
+throughout this document — the German version calls it *Lauflicht*. It is
+deliberately **not** called "running light", because in an automotive context that
+means daytime running lamps, something entirely different. You will also see this
+kind of effect called *Knight Rider*.
 
-If you want to alternate two codes without any animation running, pick **steady** ones.
-`4,8` is "everything on", `4,5` is "red ring only, white off" — both are still images.
-`3,5` also switches white off but brings the ring's chase animation with it, which
-the `-A` generates on its own and which cannot be suppressed.
+### The trailing pulse length carries meaning
+
+The pulse after the eighth bit is 1 or 3 units long — and that length is part of the
+code, not just a frame marker. Three pairs prove it: same eight bits, different
+trailing length, different effect.
+
+| 8 bits | tail | long at | effect |
+|---|---|---|---|
+| `10001000` | H1 | 3,8 | red ring off, white only |
+| `10001000` | H3 | 3,7 | blink, all LEDs |
+| `10000100` | H1 | 4,8 | steady light |
+| `10000100` | H3 | 4,7 | blink, all LEDs |
+| `10000010` | H1 | 5,8 | red ring chase, white on |
+| `10000010` | H3 | 5,7 | blink, all LEDs |
+
+For the three corresponding pairs with a first position of 0, 1 or 2 the trailing
+length makes **no** difference — there the family dominates.
+
+So if you drive an `-A` yourself, you have to transmit the trailing length too.
+
+### Each -A runs its own free-running timer
+
+Experiment: reset the controller so both `-A` boards went dark and received the same
+starting frame at the same moment. Then hold one blink code constant on both.
+
+**Result: they blink at different speeds.** Not merely out of phase — at different
+frequencies.
+
+The protocol selects the **effect**, not the **timing**. Each `-A` generates its
+animation from its own, imprecise timer. For anyone rebuilding this:
+
+- **Synchronised blinking is not achievable through the effect codes.** If you need
+  it, do the timing in the controller: pick a *steady* effect and alternate it
+  against the OFF code. Then the timing comes from the controller and both sides
+  switch inside the same frame.
+- The blink rates in the table describe **one** board and are not a guaranteed
+  figure.
+- Two blinking codes cannot be compared by alternating between them — the boards'
+  drift swamps the difference. `3,7` against `4,7` could not be separated this way;
+  both blink all LEDs, whether at the same rate is open.
+
+This probably explains why the original system did its indicators through separate
+`-B` outputs rather than through effects: there the `-B` switched its own outputs, so
+the timing came from a single source.
+
+### Changing the code restarts the animation
+
+When the transmitted code changes, the `-A` starts its animation over. A chase that
+is re-triggered every second therefore visibly breaks off and restarts instead of
+running through.
+
+Two consequences:
+
+- To watch an effect run properly, hold the code **constant**.
+- To alternate two states, use **steady** images: `4,5` (red ring on, white off),
+  `4,8` (everything on) and the OFF code are steady. `3,5` brings the chase
+  animation with it, which cannot be suppressed and restarts on every switch.
 
 ---
-
 ## What was ruled out
 
 Listed so nobody spends time re-testing it:
@@ -261,8 +355,18 @@ Listed so nobody spends time re-testing it:
 - **"11 independent bits, bits 2/6/7 have no effect"** — wrong. Setting bits 2 and 3
   together produces a 4-unit pulse and thus an invalid frame. The protocol transmits
   pulse widths, not one bit per unit time.
-- **"First long position selects the colour, second the effect"** — wrong, disproved by
-  the aliases (0,6)==(4,6) and (3,7)==(4,7).
+- **"First long position selects the colour, second the effect"** — wrong in that form,
+  right in a modified one. The first position does not select a *colour* but the
+  **family**, and the second is not free, because 6 and 7 override the family. The
+  aliases (0,6)==(4,6) and (3,7)==(4,7) that the hypothesis was originally rejected on
+  are exactly that override. See [The structure behind it](#the-structure-behind-it).
+- **"'indicator one side / other side' and 'pace-car steady' are effects of the `-A`"** —
+  wrong. Both were properties of the `-B`, which had per-channel outputs. Two `-A` boards
+  on the same frame always show the same thing.
+- **"On `3,5` the white LED is off"** — wrong, it **blinks**. The error came from the
+  first round of measurements, where only a single LED was connected.
+- **"Two `-A` boards blink in sync when they get the same code"** — refuted. Even after a
+  common reset they blink at different **speeds**.
 - **"(6,7) is chase without white"** — wrong, it is steady light.
 - **"The `-F` is a protocol translator"** — wrong. It is a voltage regulator and
   taillight driver, and passes the signal through.
@@ -299,6 +403,23 @@ Pitfalls worth knowing:
 overvoltage problem or a broken analyser. The cause was a **charge-only USB cable.** If
 captures abort, swap the cable before you suspect anything else.
 
+### The second round: all 36 frames on a complete set of lamps
+
+The first effect table was recorded with **one single LED** connected, and it was wrong
+in several places as a result. It was redone on 2026-09-01 with a complete set of lamps
+on two `-A` boards, using a script that steps through all 36 frames one at a time and
+holds each one until it is confirmed. What that changed:
+
+- "indicator one side / other side" and "pace-car steady" turned out to be `-B`
+  properties, not effects
+- `3,5` has the white LED **blinking**, not off
+- six frames that were listed separately are one and the same steady light
+- the trailing pulse length turned out to be functional
+- the two boards' blink timers drift against each other
+
+The lesson generalises: **an effect table taken with an incomplete set of lamps cannot
+be trusted**, because modes that differ only on the missing lamps look identical.
+
 ---
 
 ## Licence
@@ -309,9 +430,9 @@ on it; just keep the copyright notice.
 Corrections and additions are welcome — open an issue. In particular:
 
 - the 256 codes without a start bit were never tested
-- the physical vehicle side of "one side" / "other side" is not recorded
-- the effect descriptions for `2,4` and `2,5` come from a measurement with only one LED
-  connected and may be incomplete
+- whether `3,7`, `4,7`, `5,7` and `7,8` blink at the *same rate* is open — the boards'
+  own drift makes that hard to measure
 - what pin 2 is for remains unknown
+- the resistor values on the `-A` and the `SB1` setting were never read out
 
 German version: [README.de.md](README.de.md)
