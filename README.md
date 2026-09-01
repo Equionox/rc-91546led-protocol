@@ -155,7 +155,7 @@ a 3.3 V supply. No level shifting needed.
 **Two independent channels.** Driving both pins in lockstep within one frame works
 because the edges sit at 1 and 3 units inside each bit — so one channel can send a 1
 while the other sends a 0 without the timing drifting apart. That gives **arbitrary
-combinations** of the 35 codes, e.g. Knight Rider on the left and steady red on the right.
+combinations** of the 35 codes, e.g. chase on the left and steady red on the right.
 The `-B` could blink left and right separately (`(3,6)` / `(3,7)`) but only in the roles
 its firmware provides.
 
@@ -202,7 +202,7 @@ vehicle side — which headlight sat on which output was not recorded.
 | 2,7 | `01001010110` | `100100001` | double flash, all LEDs | full |
 | 2,8 | `01001010100` | `100100000` | double flash, all LEDs | full |
 | 3,4 | `01011001010` | `100011000` | **red ring fade**, white + pace-car steady | full |
-| 3,5 | `01011011010` | `100010100` | **red ring Knight Rider**, white off, pace-car steady | full |
+| 3,5 | `01011011010` | `100010100` | **red ring chase**, white off, pace-car steady | full |
 | 3,6 | `01011010010` | `100010011` | **indicator, one side** | full |
 | 3,7 | `01011010110` | `100010001` | **indicator, other side** | full |
 | 3,8 | `01011010100` | `100010000` | red ring off, white only | full |
@@ -212,7 +212,7 @@ vehicle side — which headlight sat on which output was not recorded.
 | 4,8 | `01010010100` | `100001000` | steady light on all lamps | full |
 | 5,6 | `01010110010` | `100000111` | indicator, one side | full |
 | 5,7 | `01010110110` | `100000101` | indicator, other side | full |
-| 5,8 | `01010110100` | `100000100` | **red ring Knight Rider**, white on | full |
+| 5,8 | `01010110100` | `100000100` | **red ring chase**, white on | full |
 | 6,7 | `01010100110` | `100000011` | steady light on all lamps | full |
 | 6,8 | `01010100100` | `100000011` | same code as 6,7 | full |
 | 7,8 | `01010101100` | `100000001` | indicator, other side | full |
@@ -224,31 +224,32 @@ There the second position controls the **red ring**:
 | long at | red ring |
 |---|---|
 | 3,4 | fade / breathing |
-| 3,5 | Knight Rider |
+| 3,5 | chase |
 | 3,6 | one side blinks |
 | 3,7 | other side blinks |
 | 3,8 | off, white only |
 
-### The two Knight Rider frames
+### The two chase frames
 
 `3,5` and `5,8` run the **same** scan on the red ring, on both headlights. They differ
 in exactly one thing:
 
 | long at | red ring | white LED |
 |---|---|---|
-| 3,5 | Knight Rider | **off** |
-| 5,8 | Knight Rider | **on** |
+| 3,5 | chase | **off** |
+| 5,8 | chase | **on** |
 
-**On terminology:** this scanning back-and-forth pattern is called *Knight Rider*
-throughout this document. It is deliberately **not** called "running light" — in an
-automotive context that term means daytime running lamps, which is something entirely
-different.
+**On terminology:** the travelling pattern on the ring is called a **chase** throughout
+this document — the German version calls it *Lauflicht*. It is deliberately **not**
+called "running light", because in an automotive context that means daytime running
+lamps, something entirely different. You will also see this kind of effect called
+*Knight Rider*.
 
 ### Steady images vs. animations
 
 If you want to alternate two codes without any animation running, pick **steady** ones.
 `4,8` is "everything on", `4,5` is "red ring only, white off" — both are still images.
-`3,5` also switches white off but brings the ring's Knight Rider animation with it, which
+`3,5` also switches white off but brings the ring's chase animation with it, which
 the `-A` generates on its own and which cannot be suppressed.
 
 ---
@@ -262,7 +263,7 @@ Listed so nobody spends time re-testing it:
   pulse widths, not one bit per unit time.
 - **"First long position selects the colour, second the effect"** — wrong, disproved by
   the aliases (0,6)==(4,6) and (3,7)==(4,7).
-- **"(6,7) is Knight Rider without white"** — wrong, it is steady light.
+- **"(6,7) is chase without white"** — wrong, it is steady light.
 - **"The `-F` is a protocol translator"** — wrong. It is a voltage regulator and
   taillight driver, and passes the signal through.
 - **"The `-B` latches the mode"** — wrong, it stops sending. What had been observed was

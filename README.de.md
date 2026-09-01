@@ -159,7 +159,7 @@ Der Modus wird nirgends gehalten. Bleibt der Eingang still, hört die `-B` auf z
 treiben funktioniert, weil die Flanken bei 1 und 3 Einheiten innerhalb jedes Bits liegen
 — ein Kanal kann eine 1 senden, während der andere eine 0 sendet, ohne dass das Timing
 auseinanderläuft. Damit sind **beliebige Kombinationen** der 35 Codes möglich, etwa
-Knight Rider links und rotes Dauerlicht rechts. Die `-B` konnte links und rechts zwar
+Lauflicht links und rotes Dauerlicht rechts. Die `-B` konnte links und rechts zwar
 getrennt blinken lassen (`(3,6)` / `(3,7)`), aber nur in den vorgesehenen Rollen.
 
 **Keine versteckten Modi.** Alle **221** Codes mit gesetztem Startbit, die die `-B` nie
@@ -206,7 +206,7 @@ Fahrzeugseite — welcher Scheinwerfer an welchem Ausgang steckte, ist nicht dok
 | 2,7 | `01001010110` | `100100001` | Doppelblinken aller LEDs | voll |
 | 2,8 | `01001010100` | `100100000` | Doppelblinken aller LEDs | voll |
 | 3,4 | `01011001010` | `100011000` | **roter Ring Fade**, weiß + Pace-Car dauerhaft | voll |
-| 3,5 | `01011011010` | `100010100` | **roter Ring Knight Rider**, weiß aus, Pace-Car dauerhaft | voll |
+| 3,5 | `01011011010` | `100010100` | **roter Ring Lauflicht**, weiß aus, Pace-Car dauerhaft | voll |
 | 3,6 | `01011010010` | `100010011` | **Blinker, eine Seite** | voll |
 | 3,7 | `01011010110` | `100010001` | **Blinker, andere Seite** | voll |
 | 3,8 | `01011010100` | `100010000` | roter Ring aus, nur weiß | voll |
@@ -216,7 +216,7 @@ Fahrzeugseite — welcher Scheinwerfer an welchem Ausgang steckte, ist nicht dok
 | 4,8 | `01010010100` | `100001000` | Dauerlicht auf allen Leuchten | voll |
 | 5,6 | `01010110010` | `100000111` | Blinker, eine Seite | voll |
 | 5,7 | `01010110110` | `100000101` | Blinker, andere Seite | voll |
-| 5,8 | `01010110100` | `100000100` | **roter Ring Knight Rider**, weiß an | voll |
+| 5,8 | `01010110100` | `100000100` | **roter Ring Lauflicht**, weiß an | voll |
 | 6,7 | `01010100110` | `100000011` | Dauerlicht auf allen Leuchten | voll |
 | 6,8 | `01010100100` | `100000011` | identischer Code wie 6,7 | voll |
 | 7,8 | `01010101100` | `100000001` | Blinker, andere Seite | voll |
@@ -228,31 +228,32 @@ Dort steuert die zweite Position den **roten Ring**:
 | lang bei | roter Ring |
 |---|---|
 | 3,4 | Fade / Atemlicht |
-| 3,5 | Knight Rider |
+| 3,5 | Lauflicht |
 | 3,6 | eine Seite blinkt |
 | 3,7 | andere Seite blinkt |
 | 3,8 | aus, nur weiß |
 
-### Die beiden Knight-Rider-Rahmen
+### Die beiden Lauflicht-Rahmen
 
 `3,5` und `5,8` fahren **dasselbe** Wandermuster auf dem roten Ring, auf beiden
 Scheinwerfern. Sie unterscheiden sich in genau einer Sache:
 
 | lang bei | roter Ring | weiße LED |
 |---|---|---|
-| 3,5 | Knight Rider | **aus** |
-| 5,8 | Knight Rider | **an** |
+| 3,5 | Lauflicht | **aus** |
+| 5,8 | Lauflicht | **an** |
 
-**Zur Benennung:** Dieses hin- und herwandernde Muster heißt in diesem Dokument
-durchgehend *Knight Rider*. Absichtlich **nicht** „Lauflicht" — im Englischen wäre
-„running light" das Tagfahrlicht und damit etwas völlig anderes.
+**Zur Benennung:** Das wandernde Muster auf dem Ring heißt in diesem Dokument
+durchgehend **Lauflicht** — in der englischen Fassung *chase*, weil „running light"
+dort das Tagfahrlicht bezeichnen würde. Gelegentlich findet man dafür auch den Namen
+*Knight Rider*.
 
 ### Standbilder und Animationen unterscheiden
 
 Wer zwei Codes gegeneinander takten will, ohne dass etwas animiert läuft, muss
 **Standbilder** wählen. `4,8` ist „alles an", `4,5` ist „nur roter Ring, weiß aus" —
 beides stehende Bilder. `3,5` schaltet weiß ebenfalls ab, bringt aber die
-Knight-Rider-Animation des Rings mit, die die `-A` selbst erzeugt und die sich nicht
+Lauflicht-Animation des Rings mit, die die `-A` selbst erzeugt und die sich nicht
 unterdrücken lässt.
 
 ---
@@ -266,7 +267,7 @@ Aufgeführt, damit sie niemand erneut prüft:
   überträgt Impulsbreiten, nicht ein Bit je Einheitszeit.
 - **„Erste lange Position wählt die Farbe, zweite den Effekt"** — widerlegt durch die
   Aliase (0,6)==(4,6) und (3,7)==(4,7).
-- **„(6,7) ist Knight Rider ohne Weiß"** — widerlegt, es ist Dauerleuchten.
+- **„(6,7) ist Lauflicht ohne Weiß"** — widerlegt, es ist Dauerleuchten.
 - **„Die `-F` ist ein Protokoll-Übersetzer"** — falsch. Sie ist Spannungsregler und
   Rücklicht-Treiber und leitet das Signal durch.
 - **„Die `-B` speichert den Modus"** — falsch, sie hört auf zu senden. Beobachtet worden
