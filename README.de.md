@@ -304,16 +304,30 @@ unabhängig behandeln:
 ### Die Familienregel gilt auch jenseits der 36 Rahmen
 
 Die `-B` kann nie mehr als zwei Positionen setzen. Ein selbst erzeugter Code kann es —
-und dann zeigt sich, dass die `-A` schlicht die **niedrigste** gesetzte Position nimmt
-und danach die Familie wählt. Höhere Positionen ignoriert sie in den Familien 0, 1 und 2.
+und dann zeigt sich, dass die Blink-Familien 0, 1 und 2 sich gegen den differenzierten
+Bereich 3–6 durchsetzen und die höheren Positionen einfach schlucken.
 
 Drei Vorhersagen, vorab angesagt und alle eingetroffen (2026-09-01):
 
-| Positionen | niedrigste | vorhergesagt und beobachtet |
+| Positionen | maßgeblich | vorhergesagt und beobachtet |
 |---|---|---|
 | 2, 3, 4 | 2 | Doppelblinken aller LEDs |
 | 1, 3, 4 | 1 | kurzes Blinken, dann lange Pause |
 | 0, 3, 4 | 0 | schnelles Blinken aller LEDs |
+
+**Es ist aber keine Ordnung nach Zahlenwert.** „Die niedrigste Position gewinnt" wäre die
+naheliegende Lesart und ist falsch — zwei Rahmen der `-B` widersprechen:
+
+| Positionen | nach „niedrigste gewinnt" | tatsächlich |
+|---|---|---|
+| 0, 2 | schnelles Blinken | **Doppelblinken** — Familie 2 |
+| 1, 2 | kurzes Blinken + Pause | **Doppelblinken** — Familie 2 |
+
+Die Rangfolge ist also `2` vor `0` und `1`, und alle drei vor dem Bereich 3–6. Ob 0 vor 1
+steht, ist offen: die einzige Kombination `0,1` liefert ein drittes Ergebnis („kurzes
+Aufblinken"), ebenso `1,3`. Die drei Vorhersagen oben gingen auf, weil die hinzugefügte
+Position dort jeweils *zugleich* die niedrigere und aus dem starken Bereich 0–2 war — sie
+konnten den Unterschied gar nicht aufdecken.
 
 **Der Bereich „Ring und Weiß getrennt" verhält sich anders — er braucht ein exaktes
 Paar.** Eine dritte Position oder die falsche Abschlusslänge wirft den Code aus der
@@ -332,6 +346,23 @@ Einen pauschalen Rückfall auf Blinken gibt es also nicht: Positionen 3, 4, 5 ge
 zusammenbauen. Der Fade hängt an genau einem Code, und alle neun Ein-Bit-Nachbarn führen
 woanders hin. Da der Suchraum vollständig durchgemessen ist, ist das kein „nicht
 gefunden", sondern ein **existiert nicht**.
+
+### Die Familien im Überblick
+
+Nach der niedrigsten gesetzten Position — Position 7 und 8 haben kein Bit:
+
+| Position | Familie |
+|---|---|
+| 0 | schnelles Blinken aller LEDs |
+| 1 | kurzes Blinken, dann lange Pause |
+| 2 | Doppelblinken aller LEDs |
+| 3, 4, 5 | roter Ring und weiße LED getrennt — Nachschlagetabelle, kein Familienverhalten |
+| 6 | Dauerlicht auf allen Leuchten |
+| leere Maske | Abschluss **H1 → dunkel**, Abschluss **H3 → Blinken aller LEDs** |
+
+Die letzte Zeile folgt aus der Bit-1-Erkenntnis: `7,8` setzt **gar keine** Position, denn
+7 und 8 haben kein Bit und Bit 1 zählt nicht. Dieser Rahmen unterscheidet sich vom
+AUS-Code also einzig in der Abschlusslänge.
 
 ### Die beiden Lauflicht-Rahmen
 

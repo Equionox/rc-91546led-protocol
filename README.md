@@ -301,16 +301,30 @@ independently:
 ### The family rule holds beyond the 36 frames
 
 The `-B` can never set more than two positions. A hand-built code can — and then it turns
-out the `-A` simply takes the **lowest** set position and picks the family from it. Higher
-positions are ignored in families 0, 1 and 2.
+out that the blink families 0, 1 and 2 win over the differentiated range 3–6 and simply
+swallow the higher positions.
 
 Three predictions, called in advance and all confirmed (2026-09-01):
 
-| positions | lowest | predicted and observed |
+| positions | decisive | predicted and observed |
 |---|---|---|
 | 2, 3, 4 | 2 | double flash, all LEDs |
 | 1, 3, 4 | 1 | short blink, then long pause |
 | 0, 3, 4 | 0 | fast blink, all LEDs |
+
+**It is not an ordering by numeric value, though.** "The lowest position wins" is the
+obvious reading and it is wrong — two of the `-B`'s own frames contradict it:
+
+| positions | per "lowest wins" | actually |
+|---|---|---|
+| 0, 2 | fast blink | **double flash** — family 2 |
+| 1, 2 | short blink + pause | **double flash** — family 2 |
+
+So the precedence is `2` over `0` and `1`, and all three over the range 3–6. Whether 0
+outranks 1 is open: the only combination `0,1` produces a third result ("brief flash"), as
+does `1,3`. The three predictions above succeeded because there the added position was
+*both* the lower one and from the strong range 0–2 — they could not have exposed the
+difference.
 
 **The "ring and white separate" range behaves differently — it needs an exact pair.** A
 third position, or the wrong trailing length, throws the code out of the table:
@@ -328,6 +342,23 @@ So there is no blanket fallback to blinking: positions 3, 4, 5 go dark.
 assembled. The fade hangs on exactly one code, and all nine single-bit neighbours lead
 somewhere else. Since the search space has been measured exhaustively, that is not a "not
 found" but a **does not exist**.
+
+### The families at a glance
+
+By the lowest set position — positions 7 and 8 have no bit:
+
+| position | family |
+|---|---|
+| 0 | fast blink, all LEDs |
+| 1 | short blink, then long pause |
+| 2 | double flash, all LEDs |
+| 3, 4, 5 | red ring and white LED separate — a lookup table, not family behaviour |
+| 6 | steady light on all lamps |
+| empty mask | tail **H1 → dark**, tail **H3 → blink, all LEDs** |
+
+The last row follows from the bit-1 finding: `7,8` sets **no** position at all, because 7
+and 8 have no bit and bit 1 does not count. That frame differs from the OFF code in the
+trailing length alone.
 
 ### The two chase frames
 
