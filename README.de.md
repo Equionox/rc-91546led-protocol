@@ -86,7 +86,7 @@ Periode. Das Verhältnis der Einheitszeiten ist 1062/509 = **2,087**, also fast 
 
 Aus den beiden langen Positionen `(a,b)` des Eingangsrahmens:
 
-    Bit 1        immer 1                           Startmarke
+    Bit 1        immer 1                           siehe unten, KEINE Startmarke
     Bit (2+a)    gesetzt
     Bit (2+b)    gesetzt, falls b <= 7
     Abschluss-H  3 statt 1 Einheit, falls 6 oder 7 in (a,b)
@@ -94,9 +94,31 @@ Aus den beiden langen Positionen `(a,b)` des Eingangsrahmens:
 Geprüft gegen alle 36 gemessenen Rahmen: **0 Abweichungen.** Eine Referenzumsetzung
 liegt in [`example/translate.c`](example/translate.c).
 
-**Grenze des Formats:** Das Datenfeld hat nur 8 Bit. `(6,7)` und `(6,8)` erzeugen deshalb
-denselben Code `100000011` — die `-A` kann sie prinzipiell nicht unterscheiden. Die 36
+### Bit 1 ist keine Startmarke — die `-A` ignoriert es
+
+Es sieht wie eine Rahmenmarke aus, weil die `-B` es ausnahmslos setzt. Es ist aber
+wirkungslos. Nachgewiesen am 2026-09-01 an zwei Codes aus verschiedenen Familien:
+
+| Rohcode | Wirkung |
+|---|---|
+| `10001100` H1 | roter Ring Fade, weiß an (Rahmen `3,4`) |
+| `00001100` H1 | **identisch** — derselbe Fade |
+| `10000110` H1 | roter Ring dauerhaft, weiß aus (Rahmen `4,5`) |
+| `00000110` H1 | **identisch** — dasselbe Dauerleuchten |
+
+Das tatsächliche Format ist also:
+
+    Bit 1        ohne Bedeutung
+    Bit 2..8     Positionsmaske für die Positionen 0..6
+    Abschluss    H1 oder H3, funktional
+
+**Grenze des Formats:** Für die Positionen bleiben nur 7 Bit. `(6,7)` und `(6,8)` erzeugen
+deshalb denselben Code — die `-A` kann sie prinzipiell nicht unterscheiden. Die 36
 Eingangsrahmen erreichen nur **35** verschiedene Codes.
+
+**Grenze des Suchraums:** 7 Positionsbits mal 2 Abschlusslängen = **256 unterscheidbare
+Codes**, und genau die sind alle gesendet worden. Die 256 Codes mit Bit 1 = 0 sind exakte
+Duplikate, kein unerforschtes Gebiet. Es gibt in diesem Protokoll nichts mehr zu finden.
 
 ### Keine versteckte Feinstruktur
 
@@ -108,9 +130,12 @@ gibt keine versteckten Synchronisationsimpulse. Das Signalmodell ist vollständi
 
 ## Der AUS-Code: `000000000`
 
-Ein Rahmen **ohne Startbit** — acht Nullbits, jedes als `H1 L3` — wird von der `-A` als
-ungültig erkannt und schaltet sie **sofort** dunkel, nicht erst nach einer
-Zeitüberwachung.
+Acht Nullbits, jedes als `H1 L3`, schalten die `-A` **sofort** dunkel, nicht erst nach
+einer Zeitüberwachung.
+
+Der Grund ist **nicht** das fehlende Bit 1 — das ignoriert die `-A` ohnehin — sondern dass
+**keine einzige Position gesetzt** ist. Dieselbe Wirkung, andere Ursache; praktisch ändert
+das nichts.
 
 Das ist der Schlüssel zu beliebigem Blinken. Jeder der 35 Effekte lässt sich gegen
 Schwarz takten, bis hinunter zu einem Rahmen (116,5 ms) je Phase.
@@ -162,10 +187,11 @@ auseinanderläuft. Damit sind **beliebige Kombinationen** der 35 Codes möglich,
 Lauflicht links und rotes Dauerlicht rechts. Die `-B` konnte links und rechts zwar
 getrennt blinken lassen (`(3,6)` / `(3,7)`), aber nur in den vorgesehenen Rollen.
 
-**Keine versteckten Modi.** Alle **221** Codes mit gesetztem Startbit, die die `-B` nie
-erzeugt, wurden gesendet, je 4 s. Kein einziger neuer Effekt. Das Weglassen der `-B`
-spart eine Platine, bringt aber keinen Funktionsgewinn. Nicht geprüft: die 256 Codes
-ohne Startbit, vermutlich ungültig.
+**Keine versteckten Modi — und der Suchraum ist vollständig.** Alle **221** Codes mit
+Bit 1, die die `-B` nie erzeugt, wurden gesendet, je 4 s. Kein einziger neuer Effekt.
+Zusammen mit den 35 Codes der `-B` sind das alle 256 unterscheidbaren Codes, denn wirksam
+sind nur 7 Positionsbits und die Abschlusslänge; die 256 Codes mit Bit 1 = 0 sind exakte
+Duplikate. Das Weglassen der `-B` spart eine Platine, bringt aber keinen Funktionsgewinn.
 
 **Zur Versorgung:** Hängen beide `-A` an der 3,3-V-Schiene eines Controller-Boards, kann
 dessen Regler an die Grenze kommen. Flackern oder Neustarts beim Anschließen der zweiten
@@ -274,6 +300,38 @@ unabhängig behandeln:
 | 5,8 | Lauflicht | an |
 
 `4,8` fällt dabei mit dem Dauerlicht zusammen, obwohl es weder 6 noch 7 enthält.
+
+### Die Familienregel gilt auch jenseits der 36 Rahmen
+
+Die `-B` kann nie mehr als zwei Positionen setzen. Ein selbst erzeugter Code kann es —
+und dann zeigt sich, dass die `-A` schlicht die **niedrigste** gesetzte Position nimmt
+und danach die Familie wählt. Höhere Positionen ignoriert sie in den Familien 0, 1 und 2.
+
+Drei Vorhersagen, vorab angesagt und alle eingetroffen (2026-09-01):
+
+| Positionen | niedrigste | vorhergesagt und beobachtet |
+|---|---|---|
+| 2, 3, 4 | 2 | Doppelblinken aller LEDs |
+| 1, 3, 4 | 1 | kurzes Blinken, dann lange Pause |
+| 0, 3, 4 | 0 | schnelles Blinken aller LEDs |
+
+**Der Bereich „Ring und Weiß getrennt" verhält sich anders — er braucht ein exaktes
+Paar.** Eine dritte Position oder die falsche Abschlusslänge wirft den Code aus der
+Tabelle:
+
+| Positionen | Abschluss | Ergebnis |
+|---|---|---|
+| 3, 4 | H1 | roter Ring Fade, weiß an |
+| 3, 4 | **H3** | Blinken aller LEDs |
+| 3, 4, **6** | H1 | Blinken aller LEDs — *nicht* Dauerlicht, was eine 6 sonst bedeutet |
+| 3, 4, **5** | H1 | **verworfen**, die `-A` bleibt dunkel |
+
+Einen pauschalen Rückfall auf Blinken gibt es also nicht: Positionen 3, 4, 5 gehen dunkel.
+
+**Praktische Folge:** Kombinationen wie „Fade ohne die weiße LED" lassen sich nicht
+zusammenbauen. Der Fade hängt an genau einem Code, und alle neun Ein-Bit-Nachbarn führen
+woanders hin. Da der Suchraum vollständig durchgemessen ist, ist das kein „nicht
+gefunden", sondern ein **existiert nicht**.
 
 ### Die beiden Lauflicht-Rahmen
 
@@ -384,8 +442,17 @@ Aufgeführt, damit sie niemand erneut prüft:
   selbst nur 3,66 V, die `-A` läuft an 3,3 V. Der Open-Drain-Umweg mit Pull-up war
   unnötig und zudem kein gültiger Test (null Flanken, weil der Pull-up nicht an lebenden
   5 V hing).
-- **„Die `-A` kennt versteckte Modi"** — widerlegt. 221 nie gesendete Codes, kein neuer
-  Effekt.
+- **„Bit 1 ist die Startmarke des Rahmens"** — falsch, die `-A` ignoriert es. `00001100`
+  liefert denselben Fade wie `10001100`, `00000110` dasselbe Dauerleuchten wie `10000110`.
+  Die `-B` setzt das Bit ausnahmslos, deshalb sah es wie eine Rahmenmarke aus.
+- **„Die 256 Codes ohne Startbit sind vermutlich ungültig"** — falsch, sie sind **exakte
+  Duplikate** der 256 mit Bit 1. Damit ist der Suchraum nicht halb, sondern vollständig
+  durchgemessen.
+- **„Die `-A` kennt versteckte Modi"** — widerlegt, und seit dem 2026-09-01 lückenlos:
+  wirksam sind 7 Positionsbits mal 2 Abschlusslängen = 256 Codes, alle gesendet (35 aus
+  den Rahmen der `-B`, 221 im Durchlauf). Kein neuer Effekt.
+- **„Ein unbekannter Code fällt immer auf Blinken zurück"** — widerlegt. Die Positionen
+  3, 4, 5 werden verworfen, die `-A` bleibt dunkel.
 - **„Ein Rückkanal auf der Datenleitung"** — unplausibel, es gibt niemanden, der eine
   Quittung verwerten könnte.
 - **„Die vierte Ader ist ungenutztes Standard-Steckergehäuse"** — inkonsistent mit dem
@@ -438,7 +505,6 @@ anpassen, darauf aufbauen; nur der Copyright-Hinweis muss mit.
 
 Korrekturen und Ergänzungen willkommen — bitte als Issue. Offen ist insbesondere:
 
-- die 256 Codes ohne Startbit wurden nie getestet
 - ob `3,7`, `4,7`, `5,7` und `7,8` mit *derselben Rate* blinken, ist offen — der Eigendrift
   der Platinen macht das schwer messbar
 - wozu Pin 2 dient, ist unbekannt

@@ -85,7 +85,7 @@ cut, and several effects kept working.
 
 From the two long positions `(a,b)` of the input frame:
 
-    bit 1        always 1                          start marker
+    bit 1        always 1                          see below, NOT a start marker
     bit (2+a)    set
     bit (2+b)    set, if b <= 7
     trailing H   3 units instead of 1, if 6 or 7 is in (a,b)
@@ -93,9 +93,32 @@ From the two long positions `(a,b)` of the input frame:
 Checked against all 36 measured frames: **zero deviations.** A reference implementation
 is in [`example/translate.c`](example/translate.c).
 
-**Limit of the format:** the data field is only 8 bits wide. `(6,7)` and `(6,8)` therefore
-produce the same code `100000011` — the `-A` cannot tell them apart. The 36 input frames
-map onto only **35** distinct codes.
+### Bit 1 is not a start marker — the `-A` ignores it
+
+It looks like a frame marker because the `-B` sets it without exception. It has no effect.
+Demonstrated on 2026-09-01 with two codes from different families:
+
+| raw code | effect |
+|---|---|
+| `10001100` H1 | red ring fade, white on (frame `3,4`) |
+| `00001100` H1 | **identical** — the same fade |
+| `10000110` H1 | red ring steady, white off (frame `4,5`) |
+| `00000110` H1 | **identical** — the same steady red |
+
+So the actual format is:
+
+    bit 1        no meaning
+    bits 2..8    position mask for positions 0..6
+    trailing H   H1 or H3, functional
+
+**Limit of the format:** that leaves only 7 bits for the positions. `(6,7)` and `(6,8)`
+therefore produce the same code — the `-A` cannot tell them apart. The 36 input frames map
+onto only **35** distinct codes.
+
+**Limit of the search space:** 7 position bits times 2 trailing lengths = **256
+distinguishable codes**, and every one of them has been sent. The 256 codes with bit 1 = 0
+are exact duplicates, not unexplored territory. There is nothing left to find in this
+protocol.
 
 ### No hidden fine structure
 
@@ -108,8 +131,11 @@ complete.
 
 ## The OFF code: `000000000`
 
-A frame **without the start bit** — eight zero bits, each sent as `H1 L3` — is rejected
-by the `-A` as invalid and turns it **dark immediately**, not after a timeout.
+Eight zero bits, each sent as `H1 L3`, turn the `-A` **dark immediately**, not after a
+timeout.
+
+The reason is **not** the missing bit 1 — the `-A` ignores that anyway — but that **no
+position at all is set**. Same effect, different cause; in practice nothing changes.
 
 This is the key to arbitrary blinking. Any of the 35 effects can be alternated against
 black, down to one frame (116.5 ms) per phase.
@@ -159,9 +185,11 @@ combinations** of the 35 codes, e.g. chase on the left and steady red on the rig
 The `-B` could blink left and right separately (`(3,6)` / `(3,7)`) but only in the roles
 its firmware provides.
 
-**No hidden modes.** All **221** codes with the start bit set that the `-B` never produces
-were sent, 4 s each. Not a single new effect. Dropping the `-B` saves a board but gains no
-functionality. Not tested: the 256 codes without a start bit, presumed invalid.
+**No hidden modes — and the search space is complete.** All **221** codes with bit 1 set
+that the `-B` never produces were sent, 4 s each. Not a single new effect. Together with
+the `-B`'s 35 codes that is all 256 distinguishable codes, because only 7 position bits
+and the trailing length have any effect; the 256 codes with bit 1 = 0 are exact
+duplicates. Dropping the `-B` saves a board but gains no functionality.
 
 **On the supply:** if both `-A` boards hang on a controller board's 3.3 V rail, its
 regulator may reach its limit. Flicker or resets when connecting the second board point
@@ -270,6 +298,37 @@ independently:
 
 `4,8` coincides with the steady-light effect even though it contains neither 6 nor 7.
 
+### The family rule holds beyond the 36 frames
+
+The `-B` can never set more than two positions. A hand-built code can — and then it turns
+out the `-A` simply takes the **lowest** set position and picks the family from it. Higher
+positions are ignored in families 0, 1 and 2.
+
+Three predictions, called in advance and all confirmed (2026-09-01):
+
+| positions | lowest | predicted and observed |
+|---|---|---|
+| 2, 3, 4 | 2 | double flash, all LEDs |
+| 1, 3, 4 | 1 | short blink, then long pause |
+| 0, 3, 4 | 0 | fast blink, all LEDs |
+
+**The "ring and white separate" range behaves differently — it needs an exact pair.** A
+third position, or the wrong trailing length, throws the code out of the table:
+
+| positions | tail | result |
+|---|---|---|
+| 3, 4 | H1 | red ring fade, white on |
+| 3, 4 | **H3** | blink, all LEDs |
+| 3, 4, **6** | H1 | blink, all LEDs — *not* steady light, which a 6 otherwise means |
+| 3, 4, **5** | H1 | **rejected**, the `-A` stays dark |
+
+So there is no blanket fallback to blinking: positions 3, 4, 5 go dark.
+
+**Practical consequence:** combinations such as "fade without the white LED" cannot be
+assembled. The fade hangs on exactly one code, and all nine single-bit neighbours lead
+somewhere else. Since the search space has been measured exhaustively, that is not a "not
+found" but a **does not exist**.
+
 ### The two chase frames
 
 `3,5` and `5,8` run the same travelling pattern on the red ring and differ only in
@@ -377,7 +436,17 @@ Listed so nobody spends time re-testing it:
   drives 3.66 V and the `-A` runs off 3.3 V. An open-drain workaround with a pull-up was
   unnecessary, and was not even a valid test (the measurement showed zero edges because
   the pull-up was not on a live 5 V rail).
-- **"The `-A` has hidden modes"** — wrong. 221 never-sent codes, no new effect.
+- **"Bit 1 is the frame's start marker"** — wrong, the `-A` ignores it. `00001100` gives
+  the same fade as `10001100`, `00000110` the same steady red as `10000110`. The `-B` sets
+  the bit without exception, which is why it looked like a frame marker.
+- **"The 256 codes without a start bit are presumably invalid"** — wrong, they are **exact
+  duplicates** of the 256 with bit 1 set. The search space is therefore not half measured
+  but fully measured.
+- **"The `-A` has hidden modes"** — wrong, and since 2026-09-01 without any gap: what acts
+  is 7 position bits times 2 trailing lengths = 256 codes, all of them sent (35 from the
+  `-B`'s frames, 221 in the sweep). No new effect.
+- **"An unknown code always falls back to blinking"** — wrong. Positions 3, 4, 5 are
+  rejected and the `-A` stays dark.
 - **"There is a return channel on the data line"** — implausible; there is nobody who
   could act on an acknowledgement.
 - **"The fourth wire is an unused standard connector shell"** — inconsistent with the
@@ -429,7 +498,6 @@ on it; just keep the copyright notice.
 
 Corrections and additions are welcome — open an issue. In particular:
 
-- the 256 codes without a start bit were never tested
 - whether `3,7`, `4,7`, `5,7` and `7,8` blink at the *same rate* is open — the boards'
   own drift makes that hard to measure
 - what pin 2 is for remains unknown

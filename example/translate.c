@@ -15,7 +15,8 @@ void translate(int a, int b, uint8_t bits[8], uint8_t *tail)
     for (int i = 0; i < 8; i++)
         bits[i] = 0;
 
-    bits[0] = 1;                      /* start marker, always set          */
+    bits[0] = 1;                      /* the -B always sets this bit, but   */
+                                      /* the -A ignores it -- see README    */
     if (1 + a >= 0 && 1 + a < 8)
         bits[1 + a] = 1;
     if (b <= 7 && 1 + b < 8)          /* b == 8 falls outside the 8-bit field */
