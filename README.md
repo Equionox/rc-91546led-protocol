@@ -347,8 +347,8 @@ So there is no blanket fallback to blinking: positions 3, 4, 5 go dark.
 
 **Practical consequence:** combinations such as "fade without the white LED" cannot be
 assembled. The fade hangs on exactly one code, and all nine single-bit neighbours lead
-somewhere else. Since the search space has been measured exhaustively, that is not a "not
-found" but a **does not exist**.
+somewhere else. That is not a "not found" but a **does not exist** — see
+[The differentiated range is closed](#the-differentiated-range-is-closed).
 
 ### The families at a glance
 
@@ -374,6 +374,33 @@ empty bit mask, with the eighth position slot alone deciding between dark and bl
 over-general rules died here in a single day ("the lowest position wins", "H3 means
 blinking"). The behaviour is a lookup over the mask; the regularities above are patterns in
 it, not a derivation.
+
+### The differentiated range is closed
+
+Masks containing 0, 1 or 2 end up in a blink family; masks containing 6 or 7 in steady
+light or blinking. **Anything that treats the red ring and the white LED separately must
+therefore be a subset of `{3,4,5}`.** There are exactly eight of those, and all eight have
+been measured:
+
+| mask | effect |
+|---|---|
+| `{}` | dark |
+| `{3}` | red ring off, white only |
+| `{4}` | steady light on all lamps |
+| `{5}` | red ring chase, white on |
+| `{3,4}` | **red ring fade**, white on |
+| `{3,5}` | red ring chase, white blinking |
+| `{4,5}` | red ring steady, **white off** |
+| `{3,4,5}` | dark |
+
+**There are no feature bits.** "Fade" occurs in exactly one mask, "white off" in exactly
+one — and they are different ones. Neither `{3}` nor `{4}` alone fades. If there were a
+fade bit and a white-off bit, they would combine; they do not.
+
+So the effects are **a menu of ready-made scenes, not an encoding built from features**:
+seven non-empty masks, six distinct pictures, picked by hand. Anyone looking for a
+combination that is not on this list — "fade without the white LED", say — is not looking
+for something undiscovered but for something that does not exist.
 
 ### The two chase frames
 

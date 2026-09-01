@@ -352,8 +352,8 @@ Einen pauschalen Rückfall auf Blinken gibt es also nicht: Positionen 3, 4, 5 ge
 
 **Praktische Folge:** Kombinationen wie „Fade ohne die weiße LED" lassen sich nicht
 zusammenbauen. Der Fade hängt an genau einem Code, und alle neun Ein-Bit-Nachbarn führen
-woanders hin. Da der Suchraum vollständig durchgemessen ist, ist das kein „nicht
-gefunden", sondern ein **existiert nicht**.
+woanders hin. Das ist kein „nicht gefunden", sondern ein **existiert nicht** — siehe
+[Der differenzierte Bereich ist abgeschlossen](#der-differenzierte-bereich-ist-abgeschlossen).
 
 ### Die Familien im Überblick
 
@@ -381,6 +381,32 @@ Mechanik. An einem einzigen Tag sind hier zwei zu allgemein formulierte Regeln g
 („die niedrigste Position gewinnt", „H3 heißt Blinken"). Die Wirkung ist eine
 Nachschlagetabelle über die Maske; die Regelmäßigkeiten oben sind Muster darin, keine
 Herleitung.
+
+### Der differenzierte Bereich ist abgeschlossen
+
+Masken mit 0, 1 oder 2 landen in einer Blink-Familie; Masken mit 6 oder 7 in Dauerlicht
+oder Blinken. **Alles, was roten Ring und weiße LED getrennt behandelt, muss deshalb eine
+Teilmenge von `{3,4,5}` sein.** Davon gibt es genau acht, und alle acht sind gemessen:
+
+| Maske | Effekt |
+|---|---|
+| `{}` | dunkel |
+| `{3}` | roter Ring aus, nur weiß |
+| `{4}` | Dauerlicht auf allen Leuchten |
+| `{5}` | roter Ring Lauflicht, weiß an |
+| `{3,4}` | **roter Ring Fade**, weiß an |
+| `{3,5}` | roter Ring Lauflicht, weiß blinkt |
+| `{4,5}` | rotes Dauerleuchten, **weiß aus** |
+| `{3,4,5}` | dunkel |
+
+**Es gibt keine Merkmalsbits.** „Fade" tritt in genau einer Maske auf, „weiß aus" ebenfalls
+in genau einer — und es sind verschiedene. Weder `{3}` noch `{4}` allein fadet. Gäbe es ein
+Fade-Bit und ein Weiß-aus-Bit, ließen sie sich kombinieren; das ist nicht der Fall.
+
+Die Effekte sind also **eine Speisekarte fertiger Szenen, keine Kodierung aus Merkmalen**:
+sieben nichtleere Masken, sechs verschiedene Bilder, von Hand ausgesucht. Wer eine
+Kombination sucht, die nicht in dieser Liste steht — etwa „Fade ohne die weiße LED" —
+sucht nicht nach etwas Unentdecktem, sondern nach etwas, das es nicht gibt.
 
 ### Die beiden Lauflicht-Rahmen
 
