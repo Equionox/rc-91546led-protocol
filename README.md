@@ -202,7 +202,7 @@ vehicle side — which headlight sat on which output was not recorded.
 | 2,7 | `01001010110` | `100100001` | double flash, all LEDs | full |
 | 2,8 | `01001010100` | `100100000` | double flash, all LEDs | full |
 | 3,4 | `01011001010` | `100011000` | **red ring fade**, white + pace-car steady | full |
-| 3,5 | `01011011010` | `100010100` | **red ring Knight Rider**, white off | full |
+| 3,5 | `01011011010` | `100010100` | **red ring Knight Rider**, white off, pace-car steady | full |
 | 3,6 | `01011010010` | `100010011` | **indicator, one side** | full |
 | 3,7 | `01011010110` | `100010001` | **indicator, other side** | full |
 | 3,8 | `01011010100` | `100010000` | red ring off, white only | full |
@@ -212,7 +212,7 @@ vehicle side — which headlight sat on which output was not recorded.
 | 4,8 | `01010010100` | `100001000` | steady light on all lamps | full |
 | 5,6 | `01010110010` | `100000111` | indicator, one side | full |
 | 5,7 | `01010110110` | `100000101` | indicator, other side | full |
-| 5,8 | `01010110100` | `100000100` | **running light both sides**, ring Knight Rider, white on | full |
+| 5,8 | `01010110100` | `100000100` | **red ring Knight Rider**, white on | full |
 | 6,7 | `01010100110` | `100000011` | steady light on all lamps | full |
 | 6,8 | `01010100100` | `100000011` | same code as 6,7 | full |
 | 7,8 | `01010101100` | `100000001` | indicator, other side | full |
@@ -229,12 +229,20 @@ There the second position controls the **red ring**:
 | 3,7 | other side blinks |
 | 3,8 | off, white only |
 
-### The two running-light frames
+### The two Knight Rider frames
 
-| long at | running light | white LED |
+`3,5` and `5,8` run the **same** scan on the red ring, on both headlights. They differ
+in exactly one thing:
+
+| long at | red ring | white LED |
 |---|---|---|
-| 3,5 | yes | **off** |
-| 5,8 | yes | **on** |
+| 3,5 | Knight Rider | **off** |
+| 5,8 | Knight Rider | **on** |
+
+**On terminology:** this scanning back-and-forth pattern is called *Knight Rider*
+throughout this document. It is deliberately **not** called "running light" — in an
+automotive context that term means daytime running lamps, which is something entirely
+different.
 
 ### Steady images vs. animations
 
@@ -254,7 +262,7 @@ Listed so nobody spends time re-testing it:
   pulse widths, not one bit per unit time.
 - **"First long position selects the colour, second the effect"** — wrong, disproved by
   the aliases (0,6)==(4,6) and (3,7)==(4,7).
-- **"(6,7) is running light without white"** — wrong, it is steady light.
+- **"(6,7) is Knight Rider without white"** — wrong, it is steady light.
 - **"The `-F` is a protocol translator"** — wrong. It is a voltage regulator and
   taillight driver, and passes the signal through.
 - **"The `-B` latches the mode"** — wrong, it stops sending. What had been observed was
