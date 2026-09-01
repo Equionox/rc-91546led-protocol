@@ -108,8 +108,15 @@ Demonstrated on 2026-09-01 with two codes from different families:
 So the actual format is:
 
     bit 1        no meaning
-    bits 2..8    position mask for positions 0..6
-    trailing H   H1 or H3, functional
+    bits 2..8    positions 0..6
+    trailing H   position 7      H3 = set, H1 = not set
+    position 8   cannot be transmitted
+
+**The trailing pulse is the eighth position slot.** It does not behave like a modifier but
+like another mask bit — there was simply no room left in the bit field, so it is appended
+as a long pulse. Read that way, the 36 frames map onto **35 masks without a single
+contradiction**, and the `(6,7)`/`(6,8)` collision explains itself: both transmit the mask
+`{6,7}`, because the `-B` drops the 8 and sets H3 for a 6 anyway.
 
 **Limit of the format:** that leaves only 7 bits for the positions. `(6,7)` and `(6,8)`
 therefore produce the same code — the `-A` cannot tell them apart. The 36 input frames map
@@ -347,18 +354,26 @@ found" but a **does not exist**.
 
 By the lowest set position — positions 7 and 8 have no bit:
 
-| position | family |
+| mask contains | behaviour |
 |---|---|
-| 0 | fast blink, all LEDs |
-| 1 | short blink, then long pause |
-| 2 | double flash, all LEDs |
-| 3, 4, 5 | red ring and white LED separate — a lookup table, not family behaviour |
-| 6 | steady light on all lamps |
-| empty mask | tail **H1 → dark**, tail **H3 → blink, all LEDs** |
+| 0, 1 or 2 | blink family, wins over everything higher — `2` outranks `0` and `1` |
+| 3, 4, 5 (without 6, without 7) | red ring and white LED separate — a lookup table |
+| **6 and 7 together** | steady light on all lamps |
+| 6 alone, or 7 alone | blink, all LEDs |
+| nothing at all | dark |
 
-The last row follows from the bit-1 finding: `7,8` sets **no** position at all, because 7
-and 8 have no bit and bit 1 does not count. That frame differs from the OFF code in the
-trailing length alone.
+**There is no "family 6".** `{6,7}` gives steady light, but `{6}` alone and `{7}` alone both
+give blinking. The `-B` can never send `{6}`, because it always sets H3 for a 6 — which is
+why it looked as though 6 meant steady. `{6}` was measured on 2026-09-01 with a hand-built
+code: **blinking**.
+
+Likewise `{}` versus `{7}` is the difference between the OFF code and `7,8` — the same
+empty bit mask, with the eighth position slot alone deciding between dark and blinking.
+
+**A warning about using this table:** it is a description, not a mechanism. Two
+over-general rules died here in a single day ("the lowest position wins", "H3 means
+blinking"). The behaviour is a lookup over the mask; the regularities above are patterns in
+it, not a derivation.
 
 ### The two chase frames
 
@@ -396,6 +411,19 @@ trailing length, different effect.
 
 For the three corresponding pairs with a first position of 0, 1 or 2 the trailing
 length makes **no** difference — there the family dominates.
+
+**Careful: the direction is not always the same.** In the three pairs above, H3 leads into
+blinking. For the mask `{6}` it is the other way round: H1 blinks, H3 gives steady light.
+So "H3 means blinking" is wrong — the trailing pulse is the eighth position slot, not a
+blink switch.
+
+| mask | H1 (position 7 clear) | H3 (position 7 set) |
+|---|---|---|
+| `{3}` | red ring off, white only | blink |
+| `{4}` | steady light | blink |
+| `{5}` | red ring chase, white on | blink |
+| `{6}` | **blink** | **steady light** |
+| `{}` | **dark** | **blink** |
 
 So if you drive an `-A` yourself, you have to transmit the trailing length too.
 

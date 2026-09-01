@@ -109,8 +109,16 @@ wirkungslos. Nachgewiesen am 2026-09-01 an zwei Codes aus verschiedenen Familien
 Das tatsächliche Format ist also:
 
     Bit 1        ohne Bedeutung
-    Bit 2..8     Positionsmaske für die Positionen 0..6
-    Abschluss    H1 oder H3, funktional
+    Bit 2..8     Positionen 0..6
+    Abschluss    Position 7      H3 = gesetzt, H1 = nicht gesetzt
+    Position 8   nicht übertragbar
+
+**Der Abschlussimpuls ist die achte Positionsstelle.** Er verhält sich nicht wie ein
+Modifikator, sondern wie ein weiteres Maskenbit — es fehlte nur der Platz im Bitfeld, also
+wird es als langer Impuls angehängt. Mit dieser Lesart bilden die 36 Rahmen **35 Masken
+ohne einen einzigen Widerspruch** ab, und die Kollision `(6,7)`/`(6,8)` erklärt sich von
+selbst: beide senden die Maske `{6,7}`, weil die `-B` die 8 fallen lässt und zu einer 6
+ohnehin H3 setzt.
 
 **Grenze des Formats:** Für die Positionen bleiben nur 7 Bit. `(6,7)` und `(6,8)` erzeugen
 deshalb denselben Code — die `-A` kann sie prinzipiell nicht unterscheiden. Die 36
@@ -351,18 +359,28 @@ gefunden", sondern ein **existiert nicht**.
 
 Nach der niedrigsten gesetzten Position — Position 7 und 8 haben kein Bit:
 
-| Position | Familie |
+| Maske enthält | Verhalten |
 |---|---|
-| 0 | schnelles Blinken aller LEDs |
-| 1 | kurzes Blinken, dann lange Pause |
-| 2 | Doppelblinken aller LEDs |
-| 3, 4, 5 | roter Ring und weiße LED getrennt — Nachschlagetabelle, kein Familienverhalten |
-| 6 | Dauerlicht auf allen Leuchten |
-| leere Maske | Abschluss **H1 → dunkel**, Abschluss **H3 → Blinken aller LEDs** |
+| 0, 1 oder 2 | Blink-Familie, setzt sich gegen alles Höhere durch — `2` sticht `0` und `1` |
+| 3, 4, 5 (ohne 6, ohne 7) | roter Ring und weiße LED getrennt — Nachschlagetabelle |
+| **6 und 7 zusammen** | Dauerlicht auf allen Leuchten |
+| 6 allein, oder 7 allein | Blinken aller LEDs |
+| gar nichts | dunkel |
 
-Die letzte Zeile folgt aus der Bit-1-Erkenntnis: `7,8` setzt **gar keine** Position, denn
-7 und 8 haben kein Bit und Bit 1 zählt nicht. Dieser Rahmen unterscheidet sich vom
-AUS-Code also einzig in der Abschlusslänge.
+**Es gibt keine „Familie 6".** `{6,7}` ergibt Dauerlicht, aber `{6}` allein und `{7}` allein
+ergeben beide Blinken. Die `-B` kann `{6}` nie senden, weil sie zu einer 6 immer H3 setzt —
+deshalb sah es aus, als bedeute die 6 Dauerlicht. Gemessen wurde `{6}` am 2026-09-01 mit
+einem selbst gebauten Code: **Blinken**.
+
+Ebenso ist `{}` gegen `{7}` der Unterschied zwischen dem AUS-Code und `7,8` — dieselbe
+leere Bitmaske, und allein die achte Positionsstelle entscheidet zwischen dunkel und
+Blinken.
+
+**Eine Warnung zur Benutzung dieser Tabelle:** sie ist eine Beschreibung, keine
+Mechanik. An einem einzigen Tag sind hier zwei zu allgemein formulierte Regeln gefallen
+(„die niedrigste Position gewinnt", „H3 heißt Blinken"). Die Wirkung ist eine
+Nachschlagetabelle über die Maske; die Regelmäßigkeiten oben sind Muster darin, keine
+Herleitung.
 
 ### Die beiden Lauflicht-Rahmen
 
@@ -399,6 +417,19 @@ Bits, unterschiedliche Abschlusslänge, unterschiedlicher Effekt.
 
 Bei den drei entsprechenden Paaren mit erster Position 0, 1 oder 2 macht die
 Abschlusslänge **keinen** Unterschied — dort dominiert die Familie.
+
+**Achtung, die Richtung ist nicht immer dieselbe.** In den drei Paaren oben führt H3 ins
+Blinken. Bei der Maske `{6}` ist es umgekehrt: H1 blinkt, H3 gibt Dauerlicht. „H3 heißt
+Blinken" ist also falsch — der Abschluss ist die achte Positionsstelle, kein
+Blink-Schalter.
+
+| Maske | H1 (Position 7 nicht gesetzt) | H3 (Position 7 gesetzt) |
+|---|---|---|
+| `{3}` | roter Ring aus, nur weiß | Blinken |
+| `{4}` | Dauerlicht | Blinken |
+| `{5}` | roter Ring Lauflicht, weiß an | Blinken |
+| `{6}` | **Blinken** | **Dauerlicht** |
+| `{}` | **dunkel** | **Blinken** |
 
 Wer die `-A` selbst ansteuert, muss die Abschlusslänge also mit übertragen.
 
