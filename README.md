@@ -294,8 +294,8 @@ captures abort, swap the cable before you suspect anything else.
 
 ## Licence
 
-- **Documentation** (this file and its German counterpart): [CC BY 4.0](https://creativecommons.org/licenses/by/4.0/)
-- **Code** in `example/`: MIT, see [LICENSE](LICENSE)
+**MIT** — documentation and code alike. See [LICENSE](LICENSE). Use it, adapt it, build
+on it; just keep the copyright notice.
 
 Corrections and additions are welcome — open an issue. In particular:
 

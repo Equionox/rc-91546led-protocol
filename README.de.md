@@ -300,8 +300,8 @@ Fallstricke, die man kennen sollte:
 
 ## Lizenz
 
-- **Dokumentation** (diese Datei und die englische Fassung): [CC BY 4.0](https://creativecommons.org/licenses/by/4.0/)
-- **Code** in `example/`: MIT, siehe [LICENSE](LICENSE)
+**MIT** — für Dokumentation und Code gleichermaßen. Siehe [LICENSE](LICENSE). Benutzen,
+anpassen, darauf aufbauen; nur der Copyright-Hinweis muss mit.
 
 Korrekturen und Ergänzungen willkommen — bitte als Issue. Offen ist insbesondere:
 
