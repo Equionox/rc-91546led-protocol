@@ -637,6 +637,13 @@ Corrections and additions are welcome — open an issue. In particular:
   the test would be to change the unit time and see whether the animation follows
 - whether "white blinking" on `3,5` and "white with a brief dropout" on `5,8` are two
   degrees of the same behaviour could only be settled with a photodiode pickup
+- **a contradicting observation:** an older video of the same setup, already driven by a
+  microcontroller, shows **no** dropout and no brief flash of the white LED. The dropout is
+  reproducible on the current setup, code-specific (it does not occur on `4,8`), independent
+  of load (unchanged with only one board connected) and synchronous across both boards.
+  Frame corruption is ruled out — that would hit `4,8` too. Most likely the video showed a
+  different code, or the white LED was not connected then; both are white-LED phenomena.
+  Unresolved.
 - what pin 2 is for remains unknown
 - the resistor values on the `-A` and the `SB1` setting were never read out
 

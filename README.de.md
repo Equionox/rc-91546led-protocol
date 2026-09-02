@@ -646,6 +646,13 @@ Korrekturen und Ergänzungen willkommen — bitte als Issue. Offen ist insbesond
   der Test wäre, die Einheitszeit zu verändern und zu sehen, ob die Animation mitgeht
 - ob „weiß blinkt" bei `3,5` und „weiß mit kurzem Aussetzer" bei `5,8` dasselbe Verhalten
   in zwei Abstufungen sind, ließe sich nur mit einem Fotodiodenaufnehmer entscheiden
+- **ein widersprechender Befund:** eine ältere Videoaufnahme desselben Aufbaus, schon per
+  Mikrocontroller getrieben, zeigt **keine** Aussetzer und kein Aufblitzen der weißen LED.
+  Der Aussetzer ist am aktuellen Aufbau reproduzierbar, code-spezifisch (bei `4,8` tritt er
+  nicht auf), von der Last unabhängig (mit nur einer angeschlossenen Platine unverändert)
+  und auf beiden Platinen synchron. Eine Verfälschung der Rahmen ist ausgeschlossen, die
+  würde auch `4,8` treffen. Am wahrscheinlichsten lief im Video ein anderer Code, oder die
+  weiße LED war nicht angeschlossen — beides Weiß-Phänomene. Ungeklärt.
 - wozu Pin 2 dient, ist unbekannt
 - die Widerstandswerte auf der `-A` und die Stellung von `SB1` wurden nie ausgelesen
 
