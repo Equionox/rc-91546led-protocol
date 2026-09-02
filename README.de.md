@@ -251,7 +251,7 @@ deshalb ausschließlich, was **eine `-A`-Platine** tut.
 | 2,7 | `01001010110` | `100100001` | Doppelblinken aller LEDs |
 | 2,8 | `01001010100` | `100100000` | Doppelblinken aller LEDs |
 | 3,4 | `01011001010` | `100011000` | **roter Ring Fade, weiß an** |
-| 3,5 | `01011011010` | `100010100` | **roter Ring Lauflicht, weiß blinkt** |
+| 3,5 | `01011011010` | `100010100` | **roter Ring Lauflicht, weiß aus mit kurzem Aufblitzen** |
 | 3,6 | `01011010010` | `100010011` | Dauerlicht auf allen Leuchten |
 | 3,7 | `01011010110` | `100010001` | Blinken aller LEDs |
 | 3,8 | `01011010100` | `100010000` | **roter Ring aus, nur weiß** |
@@ -408,25 +408,30 @@ sieben nichtleere Masken, sechs verschiedene Bilder, von Hand ausgesucht. Wer ei
 Kombination sucht, die nicht in dieser Liste steht — etwa „Fade ohne die weiße LED" —
 sucht nicht nach etwas Unentdecktem, sondern nach etwas, das es nicht gibt.
 
-### Die beiden Lauflicht-Rahmen
+### Die beiden Lauflicht-Rahmen sind nicht dasselbe
 
-`3,5` und `5,8` fahren dasselbe Wandermuster auf dem roten Ring und unterscheiden
-sich nur in der weißen LED:
+`3,5` und `5,8` fahren beide ein Wandermuster auf dem roten Ring — aber **nicht das
+gleiche.** Am 2026-09-02 direkt verglichen, indem beide Codes gleichzeitig liefen, einer
+je Scheinwerfer (`R l <code>` / `R r <code>`; die `-B` konnte das nie, sie sendet immer auf
+beide Seiten denselben Code):
 
 | lang bei | roter Ring | weiße LED |
 |---|---|---|
-| 3,5 | Lauflicht | **blinkt** |
-| 5,8 | Lauflicht | **an, mit kurzem Aussetzer** |
+| 3,5 | Lauflicht | **aus**, blitzt kurz auf |
+| 5,8 | Lauflicht, **andere Länge** | **an**, setzt kurz aus |
 
-Bei `3,5` blinkt die weiße LED, sie ist nicht aus — eine frühere Fassung dieses
-Dokuments hatte das falsch, weil damals nur eine LED angeschlossen war.
+Zwei Unterschiede, beide vorher falsch dokumentiert:
 
-**Und `5,8` ist auch nicht einfach „weiß an"** (Korrektur 2026-09-02): die weiße LED geht
-dort kurz aus. Gegenprobe mit `4,8` bei gleichem Aufbau und konstantem Code — dort steht
-weiß ruhig, der Aussetzer gehört also zum Effekt, nicht zum Sender. Die beiden
-Lauflicht-Rahmen unterscheiden sich damit **weniger deutlich als beschrieben.** Ob
-„blinkt" und „kurzer Aussetzer" zwei Abstufungen desselben Verhaltens sind, ist mit dem
-Auge nicht zu entscheiden; dafür bräuchte es einen Fotodiodenaufnehmer.
+- **Die Lauflicht-Dauer ist verschieden.** Frühere Fassungen behaupteten „dasselbe
+  Wandermuster" — nebeneinander betrachtet ist es das nicht.
+- **Die weiße LED macht dasselbe Ereignis mit umgekehrtem Tastverhältnis**: bei `3,5`
+  überwiegend aus mit kurzem Aufblitzen, bei `5,8` überwiegend an mit kurzer Lücke.
+
+Die Fehlerkette dahinter ist lehrreich. Die erste Messreihe hatte nur **eine** LED
+angeschlossen und notierte für `3,5` „weiß aus" — was, wie sich jetzt zeigt, gar nicht so
+weit weg war. Die zweite Reihe korrigierte auf „weiß blinkt", was ebenfalls stimmt, aber
+das niedrige Tastverhältnis nicht festhielt. Und `5,8` blieb bei „weiß an", weil es nie
+gegen `3,5` gehalten wurde. Erst der gleichzeitige Vergleich löst es auf.
 
 **Zur Benennung:** Das wandernde Muster auf dem Ring heißt in diesem Dokument
 durchgehend **Lauflicht** — in der englischen Fassung *chase*, weil „running light"
@@ -555,6 +560,9 @@ Aufgeführt, damit sie niemand erneut prüft:
   beiden Platinen im Gleichschritt. Nur das **Blinken** driftet.
 - **„Bei `5,8` ist weiß einfach an"** — falsch, weiß hat einen kurzen Aussetzer. Der
   Eintrag stammte aus der Ein-LED-Messreihe und wurde ungeprüft übernommen.
+- **„`3,5` und `5,8` fahren dasselbe Wandermuster"** — falsch. Im gleichzeitigen Vergleich
+  (ein Code je Scheinwerfer) sind die Lauflicht-**Dauern verschieden**, und die weiße LED
+  läuft mit umgekehrtem Tastverhältnis.
 - **„(6,7) ist Lauflicht ohne Weiß"** — widerlegt, es ist Dauerleuchten.
 - **„Die `-F` ist ein Protokoll-Übersetzer"** — falsch. Sie ist Spannungsregler und
   Rücklicht-Treiber und leitet das Signal durch.

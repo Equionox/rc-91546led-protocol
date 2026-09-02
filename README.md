@@ -247,7 +247,7 @@ neither. The table below therefore describes only what **one `-A` board** does.
 | 2,7 | `01001010110` | `100100001` | double flash, all LEDs |
 | 2,8 | `01001010100` | `100100000` | double flash, all LEDs |
 | 3,4 | `01011001010` | `100011000` | **red ring fade, white on** |
-| 3,5 | `01011011010` | `100010100` | **red ring chase, white blinking** |
+| 3,5 | `01011011010` | `100010100` | **red ring chase, white off with a brief flash** |
 | 3,6 | `01011010010` | `100010011` | steady light on all lamps |
 | 3,7 | `01011010110` | `100010001` | blink, all LEDs |
 | 3,8 | `01011010100` | `100010000` | **red ring off, white only** |
@@ -402,25 +402,30 @@ seven non-empty masks, six distinct pictures, picked by hand. Anyone looking for
 combination that is not on this list — "fade without the white LED", say — is not looking
 for something undiscovered but for something that does not exist.
 
-### The two chase frames
+### The two chase frames are not the same
 
-`3,5` and `5,8` run the same travelling pattern on the red ring and differ only in
-the white LED:
+`3,5` and `5,8` both run a travelling pattern on the red ring — but **not the same one.**
+Compared directly on 2026-09-02 by running both codes at once, one per headlight
+(`R l <code>` / `R r <code>`; the `-B` could never do this, it always sends the same code
+to both sides):
 
 | long at | red ring | white LED |
 |---|---|---|
-| 3,5 | chase | **blinking** |
-| 5,8 | chase | **on, with a brief dropout** |
+| 3,5 | chase | **off**, brief flash |
+| 5,8 | chase, **different length** | **on**, brief dropout |
 
-On `3,5` the white LED blinks, it is not off — an earlier version of this document
-had that wrong, because only a single LED was connected at the time.
+Two differences, both previously documented wrongly:
 
-**And `5,8` is not simply "white on" either** (corrected 2026-09-02): the white LED
-briefly goes out. Control test with `4,8`, same setup and a constant code — white sits
-still there, so the dropout belongs to the effect, not to the transmitter. The two chase
-frames therefore differ **less clearly than described.** Whether "blinking" and "a brief
-dropout" are two degrees of the same behaviour cannot be decided by eye; that would need
-a photodiode pickup.
+- **The chase duration differs.** Earlier versions claimed "the same travelling pattern" —
+  seen side by side, it is not.
+- **The white LED does the same event with inverted duty**: on `3,5` mostly off with a
+  brief flash, on `5,8` mostly on with a brief gap.
+
+The chain of errors behind this is instructive. The first round had only **one** LED
+connected and recorded "white off" for `3,5` — which, as it turns out, was not far wrong.
+The second round corrected it to "white blinking", also true, but did not capture the low
+duty cycle. And `5,8` stayed at "white on", because it was never held against `3,5`. Only
+the simultaneous comparison resolves it.
 
 **On terminology:** the travelling pattern on the ring is called a **chase**
 throughout this document — the German version calls it *Lauflicht*. It is
@@ -547,6 +552,9 @@ Listed so nobody spends time re-testing it:
   both boards. Only the **blinking** drifts.
 - **"On `5,8` white is simply on"** — wrong, white has a brief dropout. The entry came from
   the single-LED round and was carried over unchecked.
+- **"`3,5` and `5,8` run the same travelling pattern"** — wrong. Compared simultaneously
+  (one code per headlight) the chase **durations differ**, and the white LED runs with
+  inverted duty.
 - **"(6,7) is chase without white"** — wrong, it is steady light.
 - **"The `-F` is a protocol translator"** — wrong. It is a voltage regulator and
   taillight driver, and passes the signal through.
