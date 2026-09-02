@@ -297,13 +297,17 @@ independently:
 | long at | red ring | white LED |
 |---|---|---|
 | 3,4 | fade / breathing | on |
-| 3,5 | chase | **blinking** |
+| 3,5 | **chase** | off, brief flash |
 | 3,8 | off | on |
 | 4,5 | steady on | **off** |
 | 4,8 | steady on | on |
-| 5,8 | chase | on |
+| 5,8 | **chase**, different length | on, brief dropout |
 
 `4,8` coincides with the steady-light effect even though it contains neither 6 nor 7.
+
+**Only two of these six frames move anything** — `3,5` and `5,8`, and the two are not
+identical. There are no further chases anywhere in the protocol: everything outside these
+six masks is blinking, steady light or dark.
 
 ### The family rule holds beyond the 36 frames
 

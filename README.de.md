@@ -301,13 +301,17 @@ unabhängig behandeln:
 | lang bei | roter Ring | weiße LED |
 |---|---|---|
 | 3,4 | Fade / Atemlicht | an |
-| 3,5 | Lauflicht | **blinkt** |
+| 3,5 | **Lauflicht** | aus, blitzt kurz auf |
 | 3,8 | aus | an |
 | 4,5 | dauerhaft an | **aus** |
 | 4,8 | dauerhaft an | an |
-| 5,8 | Lauflicht | an |
+| 5,8 | **Lauflicht**, andere Länge | an, setzt kurz aus |
 
 `4,8` fällt dabei mit dem Dauerlicht zusammen, obwohl es weder 6 noch 7 enthält.
+
+**Nur zwei dieser sechs Rahmen bewegen etwas** — `3,5` und `5,8`, und die beiden sind
+nicht identisch. Mehr Lauflichter gibt es im ganzen Protokoll nicht: alles außerhalb
+dieser sechs Masken ist Blinken, Dauerlicht oder dunkel.
 
 ### Die Familienregel gilt auch jenseits der 36 Rahmen
 
