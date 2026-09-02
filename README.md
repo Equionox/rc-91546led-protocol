@@ -257,7 +257,7 @@ neither. The table below therefore describes only what **one `-A` board** does.
 | 4,8 | `01010010100` | `100001000` | steady light on all lamps |
 | 5,6 | `01010110010` | `100000111` | steady light on all lamps |
 | 5,7 | `01010110110` | `100000101` | blink, all LEDs |
-| 5,8 | `01010110100` | `100000100` | **red ring chase, white on** |
+| 5,8 | `01010110100` | `100000100` | **red ring chase, white with a brief dropout** |
 | 6,7 | `01010100110` | `100000011` | steady light on all lamps |
 | 6,8 | `01010100100` | `100000011` | steady light on all lamps |
 | 7,8 | `01010101100` | `100000001` | blink, all LEDs |
@@ -410,10 +410,17 @@ the white LED:
 | long at | red ring | white LED |
 |---|---|---|
 | 3,5 | chase | **blinking** |
-| 5,8 | chase | **on** |
+| 5,8 | chase | **on, with a brief dropout** |
 
 On `3,5` the white LED blinks, it is not off — an earlier version of this document
 had that wrong, because only a single LED was connected at the time.
+
+**And `5,8` is not simply "white on" either** (corrected 2026-09-02): the white LED
+briefly goes out. Control test with `4,8`, same setup and a constant code — white sits
+still there, so the dropout belongs to the effect, not to the transmitter. The two chase
+frames therefore differ **less clearly than described.** Whether "blinking" and "a brief
+dropout" are two degrees of the same behaviour cannot be decided by eye; that would need
+a photodiode pickup.
 
 **On terminology:** the travelling pattern on the ring is called a **chase**
 throughout this document — the German version calls it *Lauflicht*. It is
@@ -454,30 +461,53 @@ blink switch.
 
 So if you drive an `-A` yourself, you have to transmit the trailing length too.
 
-### Each -A runs its own free-running timer
+### Blinking drifts, ring animations run in step
 
-Experiment: reset the controller so both `-A` boards went dark and received the same
-starting frame at the same moment. Then hold one blink code constant on both.
+Two experiments with opposite outcomes — the difference is the most useful practical
+finding in this document.
 
-**Result: they blink at different speeds.** Not merely out of phase — at different
-frequencies.
+**Blinking drifts.** Reset the controller so both `-A` boards went dark and received the
+same starting frame at the same moment, then hold one blink code constant on both:
+**they blink at different speeds.** Not merely out of phase — at different frequencies.
 
-The protocol selects the **effect**, not the **timing**. Each `-A` generates its
-animation from its own, imprecise timer. For anyone rebuilding this:
+**The ring animations do not.** Chase (`5,8`) and fade (`3,4`) run **in step** on both
+boards, and stay in step over half a minute, and the brief white dropout on `5,8` happens
+on both sides at the same instant.
 
-- **Synchronised blinking is not achievable through the effect codes.** If you need
-  it, do the timing in the controller: pick a *steady* effect and alternate it
-  against the OFF code. Then the timing comes from the controller and both sides
-  switch inside the same frame.
-- The blink rates in the table describe **one** board and are not a guaranteed
-  figure.
-- Two blinking codes cannot be compared by alternating between them — the boards'
-  drift swamps the difference. `3,7` against `4,7` could not be separated this way;
-  both blink all LEDs, whether at the same rate is open.
+| | |
+|---|---|
+| **in step** | ring animations of the masks in `{3,4,5}` — fade `3,4`, chase `3,5` and `5,8` |
+| **drifting** | the blink families (first position 0, 1, 2) and the blink effects with a 7 |
+
+The two boards have exactly one thing in common: the frame stream from the controller. So
+it is likely that the ring animations are **driven by the frame** while the blinking comes
+from a free-running counter. That fits the next section: for a frame-driven animation, a
+code change restarting it is exactly what you would expect — it would be the same
+mechanism.
+
+*Caveat: "frame-driven" is the interpretation. What was observed is two boards staying in
+step on the same frame stream. A direct test would be to change the unit time and see
+whether the animation speed follows — not measured.*
+
+For anyone rebuilding this:
+
+- **Synchronised motion is achievable** — pick a ring animation, it runs in step on both
+  sides.
+- **Synchronised blinking is not.** If you need it, do the timing in the controller: pick
+  a *steady* effect and alternate it against the OFF code. Then the timing comes from the
+  controller and both sides switch inside the same frame.
+- The blink rates in the table describe **one** board and are not a guaranteed figure.
+- Two blinking codes cannot be compared by alternating between them — the boards' drift
+  swamps the difference. `3,7` against `4,7` could not be separated this way; both blink
+  all LEDs, whether at the same rate is open.
 
 This probably explains why the original system did its indicators through separate
 `-B` outputs rather than through effects: there the `-B` switched its own outputs, so
 the timing came from a single source.
+
+*Earlier versions of this section (2026-09-01) claimed flatly that synchronised effects
+were unreachable through the codes. That was a generalisation from a single blink
+experiment, and the ring animations refute it.*
 
 ### Changing the code restarts the animation
 
@@ -512,6 +542,11 @@ Listed so nobody spends time re-testing it:
   first round of measurements, where only a single LED was connected.
 - **"Two `-A` boards blink in sync when they get the same code"** — refuted. Even after a
   common reset they blink at different **speeds**.
+- **"Synchronised effects are fundamentally unreachable through the codes"** — my own
+  generalisation from 2026-09-01, refuted on 2026-09-02: chase and fade run in step on
+  both boards. Only the **blinking** drifts.
+- **"On `5,8` white is simply on"** — wrong, white has a brief dropout. The entry came from
+  the single-LED round and was carried over unchecked.
 - **"(6,7) is chase without white"** — wrong, it is steady light.
 - **"The `-F` is a protocol translator"** — wrong. It is a voltage regulator and
   taillight driver, and passes the signal through.
@@ -586,6 +621,10 @@ Corrections and additions are welcome — open an issue. In particular:
 
 - whether `3,7`, `4,7`, `5,7` and `7,8` blink at the *same rate* is open — the boards'
   own drift makes that hard to measure
+- whether the ring animations really are tied to the frame clock is not directly proven —
+  the test would be to change the unit time and see whether the animation follows
+- whether "white blinking" on `3,5` and "white with a brief dropout" on `5,8` are two
+  degrees of the same behaviour could only be settled with a photodiode pickup
 - what pin 2 is for remains unknown
 - the resistor values on the `-A` and the `SB1` setting were never read out
 

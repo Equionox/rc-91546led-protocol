@@ -261,7 +261,7 @@ deshalb ausschließlich, was **eine `-A`-Platine** tut.
 | 4,8 | `01010010100` | `100001000` | Dauerlicht auf allen Leuchten |
 | 5,6 | `01010110010` | `100000111` | Dauerlicht auf allen Leuchten |
 | 5,7 | `01010110110` | `100000101` | Blinken aller LEDs |
-| 5,8 | `01010110100` | `100000100` | **roter Ring Lauflicht, weiß an** |
+| 5,8 | `01010110100` | `100000100` | **roter Ring Lauflicht, weiß mit kurzem Aussetzer** |
 | 6,7 | `01010100110` | `100000011` | Dauerlicht auf allen Leuchten |
 | 6,8 | `01010100100` | `100000011` | Dauerlicht auf allen Leuchten |
 | 7,8 | `01010101100` | `100000001` | Blinken aller LEDs |
@@ -416,10 +416,17 @@ sich nur in der weißen LED:
 | lang bei | roter Ring | weiße LED |
 |---|---|---|
 | 3,5 | Lauflicht | **blinkt** |
-| 5,8 | Lauflicht | **an** |
+| 5,8 | Lauflicht | **an, mit kurzem Aussetzer** |
 
 Bei `3,5` blinkt die weiße LED, sie ist nicht aus — eine frühere Fassung dieses
 Dokuments hatte das falsch, weil damals nur eine LED angeschlossen war.
+
+**Und `5,8` ist auch nicht einfach „weiß an"** (Korrektur 2026-09-02): die weiße LED geht
+dort kurz aus. Gegenprobe mit `4,8` bei gleichem Aufbau und konstantem Code — dort steht
+weiß ruhig, der Aussetzer gehört also zum Effekt, nicht zum Sender. Die beiden
+Lauflicht-Rahmen unterscheiden sich damit **weniger deutlich als beschrieben.** Ob
+„blinkt" und „kurzer Aussetzer" zwei Abstufungen desselben Verhaltens sind, ist mit dem
+Auge nicht zu entscheiden; dafür bräuchte es einen Fotodiodenaufnehmer.
 
 **Zur Benennung:** Das wandernde Muster auf dem Ring heißt in diesem Dokument
 durchgehend **Lauflicht** — in der englischen Fassung *chase*, weil „running light"
@@ -459,32 +466,55 @@ Blink-Schalter.
 
 Wer die `-A` selbst ansteuert, muss die Abschlusslänge also mit übertragen.
 
-### Die Zeitgeber der -A laufen frei und unabhängig
+### Blinken driftet, Ring-Animationen laufen synchron
 
-Versuch: gemeinsamer Reset des Controllers, beide `-A` gingen dunkel und bekamen
-denselben Startrahmen im selben Moment. Danach ein konstanter Blinkcode auf beide
-Seiten.
+Zwei Versuche mit entgegengesetztem Ergebnis — der Unterschied ist der wichtigste
+praktische Befund dieses Dokuments.
 
-**Ergebnis: sie blinken unterschiedlich schnell.** Nicht nur versetzt, sondern mit
+**Blinken driftet.** Gemeinsamer Reset des Controllers, beide `-A` gingen dunkel und
+bekamen denselben Startrahmen im selben Moment, danach ein konstanter Blinkcode auf beide
+Seiten: **sie blinken unterschiedlich schnell.** Nicht nur versetzt, sondern mit
 verschiedener Frequenz.
 
-Das Protokoll wählt den **Effekt**, nicht den **Takt**. Jede `-A` erzeugt ihre
-Animation aus einem eigenen, ungenauen Zeitgeber. Für Nachbauer heißt das:
+**Die Ring-Animationen nicht.** Lauflicht (`5,8`) und Fade (`3,4`) laufen auf beiden
+Platinen **im Gleichschritt**, auch über eine halbe Minute hinweg, und der kurze weiße
+Aussetzer bei `5,8` tritt auf beiden Seiten gleichzeitig auf.
 
-- **Synchrone Blinker sind über die Effektcodes nicht erreichbar.** Wer sie
-  braucht, muss den Takt im Controller machen: einen *stehenden* Effekt wählen
-  und ihn gegen den AUS-Code takten. Dann kommt die Zeit vom Controller, und
-  beide Seiten schalten im selben Rahmen.
-- Die Blinkraten in der Tabelle beschreiben **eine** Platine und sind keine
-  zugesicherte Größe.
-- Zwei blinkende Codes lassen sich per Umschalten nicht gegeneinander
-  vergleichen — der Versatz der Platinen überdeckt den Unterschied. `3,7` gegen
-  `4,7` ließ sich deshalb nicht trennen; beide zeigen Blinken aller LEDs, ob die
-  Rate identisch ist, ist offen.
+| | |
+|---|---|
+| **synchron** | Ring-Animationen der Masken aus `{3,4,5}` — Fade `3,4`, Lauflicht `3,5` und `5,8` |
+| **driftend** | die Blink-Familien (erste Position 0, 1, 2) und die Blinken-Effekte mit einer 7 |
+
+Beide Platinen haben nur eines gemeinsam: den Rahmenstrom vom Controller. Es liegt also
+nahe, dass die Ring-Animationen **aus dem Rahmen getrieben** werden, während das Blinken
+aus einem freilaufenden Zähler kommt. Das passt zum nächsten Abschnitt: dass ein
+Codewechsel die Animation zurücksetzt, ist bei einer rahmengetriebenen Animation genau die
+zu erwartende Folge — es wäre derselbe Mechanismus.
+
+*Vorbehalt: „rahmengetrieben" ist die Deutung. Beobachtet ist der Gleichschritt zweier
+Platinen am selben Rahmenstrom. Ein direkter Nachweis wäre, die Einheitszeit zu verändern
+und zu sehen, ob die Animation mitgeht — nicht gemessen.*
+
+Für Nachbauer heißt das:
+
+- **Synchrone Bewegung ist erreichbar** — eine Ring-Animation nehmen, die läuft auf
+  beiden Seiten im Gleichschritt.
+- **Synchrones Blinken ist es nicht.** Wer es braucht, muss den Takt im Controller machen:
+  einen *stehenden* Effekt wählen und ihn gegen den AUS-Code takten. Dann kommt die Zeit
+  vom Controller, und beide Seiten schalten im selben Rahmen.
+- Die Blinkraten in der Tabelle beschreiben **eine** Platine und sind keine zugesicherte
+  Größe.
+- Zwei blinkende Codes lassen sich per Umschalten nicht gegeneinander vergleichen — der
+  Versatz der Platinen überdeckt den Unterschied. `3,7` gegen `4,7` ließ sich deshalb
+  nicht trennen; beide zeigen Blinken aller LEDs, ob die Rate identisch ist, ist offen.
 
 Das erklärt vermutlich, warum die Originalanlage die Blinker über getrennte
 `-B`-Ausgänge gemacht hat und nicht über Effekte: dort schaltete die `-B` ihre
 Ausgänge, der Takt kam also aus einer einzigen Quelle.
+
+*Frühere Fassungen dieses Abschnitts (2026-09-01) behaupteten pauschal, synchrone Effekte
+seien über die Codes grundsätzlich nicht erreichbar. Das war eine Verallgemeinerung aus
+einem einzigen Blink-Versuch und ist durch die Ring-Animationen widerlegt.*
 
 ### Ein Codewechsel setzt die Animation zurück
 
@@ -520,6 +550,11 @@ Aufgeführt, damit sie niemand erneut prüft:
   weil bei der ersten Messreihe nur eine einzige LED angeschlossen war.
 - **„Zwei `-A` blinken synchron, wenn sie denselben Code bekommen"** — widerlegt. Sie
   blinken auch nach gemeinsamem Reset unterschiedlich **schnell**.
+- **„Synchrone Effekte sind über die Codes grundsätzlich nicht erreichbar"** — meine eigene
+  Verallgemeinerung vom 2026-09-01, am 2026-09-02 widerlegt: Lauflicht und Fade laufen auf
+  beiden Platinen im Gleichschritt. Nur das **Blinken** driftet.
+- **„Bei `5,8` ist weiß einfach an"** — falsch, weiß hat einen kurzen Aussetzer. Der
+  Eintrag stammte aus der Ein-LED-Messreihe und wurde ungeprüft übernommen.
 - **„(6,7) ist Lauflicht ohne Weiß"** — widerlegt, es ist Dauerleuchten.
 - **„Die `-F` ist ein Protokoll-Übersetzer"** — falsch. Sie ist Spannungsregler und
   Rücklicht-Treiber und leitet das Signal durch.
@@ -595,6 +630,10 @@ Korrekturen und Ergänzungen willkommen — bitte als Issue. Offen ist insbesond
 
 - ob `3,7`, `4,7`, `5,7` und `7,8` mit *derselben Rate* blinken, ist offen — der Eigendrift
   der Platinen macht das schwer messbar
+- ob die Ring-Animationen wirklich am Rahmentakt hängen, ist nicht direkt nachgewiesen —
+  der Test wäre, die Einheitszeit zu verändern und zu sehen, ob die Animation mitgeht
+- ob „weiß blinkt" bei `3,5` und „weiß mit kurzem Aussetzer" bei `5,8` dasselbe Verhalten
+  in zwei Abstufungen sind, ließe sich nur mit einem Fotodiodenaufnehmer entscheiden
 - wozu Pin 2 dient, ist unbekannt
 - die Widerstandswerte auf der `-A` und die Stellung von `SB1` wurden nie ausgelesen
 
