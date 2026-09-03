@@ -469,6 +469,25 @@ kurzzeitig und ist falsch: bei `{6}` blinken alle LEDs, die weiße also auch, un
 ändert dort trotzdem nichts. Es bleibt bei den zwei Lauflicht-Masken — wieder eine
 Nachschlagetabelle, keine Regel.*
 
+Alle daraufhin geprüften Masken im Überblick:
+
+| Maske | wirkt Bit 1? | |
+|---|---|---|
+| `{5}` | **ja** | weiß: an mit Aussetzer ↔ dauerhaft aus |
+| `{3,5}` | **ja** | weiß: aus mit Aufblitzen ↔ dauerhaft an |
+| `{3}` | nein | Ring aus, nur weiß |
+| `{4}` | nein | Dauerlicht auf allen |
+| `{3,4}` | nein | Fade, weiß an |
+| `{4,5}` | nein | rot dauerhaft, weiß aus |
+| `{3,4,5}` | nein | in beiden Zuständen verworfen |
+| `{}` | nein | in beiden Zuständen dunkel |
+| `{6}` | nein | Blinken aller LEDs |
+| `{5,7}` | nein | gleiche Form; Anfangsphase nicht klärbar |
+| `{5,6,7}` | nein | Dauerlicht auf allen |
+
+**Elf Masken geprüft, Bit 1 wirkt in zwei.** Beide sind Lauflicht-Masken, und beide Male
+betrifft es allein die weiße LED.
+
 **Gilt die Familienstruktur auch ohne Bit 1?** Eine Stichprobe sagt ja: `{1,3}` ohne Bit 1
 liefert dasselbe kurze Aufblinken wie mit Bit 1 — die Blink-Familie setzt sich also auch
 dort gegen die 3 durch. Das ist **ein** Datenpunkt für einen Bereich von rund 250 Codes;

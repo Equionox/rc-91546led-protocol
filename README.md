@@ -451,6 +451,25 @@ flashes on `{3,5}` and briefly drops out on `{5}`. In every other mask tested it
 and is wrong: on `{6}` all LEDs blink, the white one included, and bit 1 still changes
 nothing there. It stays with the two chase masks — a lookup table again, not a rule.*
 
+Every mask tested for this:
+
+| mask | does bit 1 act? | |
+|---|---|---|
+| `{5}` | **yes** | white: on with dropout ↔ permanently off |
+| `{3,5}` | **yes** | white: off with brief flash ↔ permanently on |
+| `{3}` | no | ring off, white only |
+| `{4}` | no | steady light on all |
+| `{3,4}` | no | fade, white on |
+| `{4,5}` | no | steady red, white off |
+| `{3,4,5}` | no | rejected in both states |
+| `{}` | no | dark in both states |
+| `{6}` | no | blink, all LEDs |
+| `{5,7}` | no | same shape; initial phase unresolved |
+| `{5,6,7}` | no | steady light on all |
+
+**Eleven masks tested, bit 1 acts on two.** Both are chase masks, and both times it is the
+white LED alone.
+
 **Does the family structure hold without bit 1?** One sample says yes: `{1,3}` without
 bit 1 gives the same brief flash as with bit 1 — so the blink family wins over the 3 there
 too. That is **one** data point for a region of some 250 codes; all it really supports is
