@@ -453,6 +453,11 @@ Bit 1 blitzt es bei `{3,5}` kurz auf und setzt bei `{5}` kurz aus. In den Masken
 Weiß — `{3}`, `{3,4}`, `{4,5}` — ändert Bit 1 **nichts**. Fünf Masken, ein durchgängiger
 Zusammenhang.
 
+**Gilt die Familienstruktur auch ohne Bit 1?** Eine Stichprobe sagt ja: `{1,3}` ohne Bit 1
+liefert dasselbe kurze Aufblinken wie mit Bit 1 — die Blink-Familie setzt sich also auch
+dort gegen die 3 durch. Das ist **ein** Datenpunkt für einen Bereich von rund 250 Codes;
+belastbar ist daran nur, dass die Struktur nicht offensichtlich an Bit 1 hängt.
+
 Position 3 ist dabei **keine „Fade-Stelle"**: sie kommt in fast jedem Verhalten vor, das die
 `-A` kennt — `{3}` nur weiß, `{3,4}` Fade, `{3,5}` Lauflicht, `{3,6,7}` Dauerlicht, `{3,7}`
 Blinken, `{3,4,5}` dunkel. Fade hängt an der Kombination `{3,4}`, nicht an einer einzelnen

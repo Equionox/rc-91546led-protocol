@@ -436,6 +436,11 @@ briefly flashes on `{3,5}` and briefly drops out on `{5}`. In the masks with a s
 LED — `{3}`, `{3,4}`, `{4,5}` — bit 1 changes **nothing**. Five masks, one consistent
 relationship.
 
+**Does the family structure hold without bit 1?** One sample says yes: `{1,3}` without
+bit 1 gives the same brief flash as with bit 1 — so the blink family wins over the 3 there
+too. That is **one** data point for a region of some 250 codes; all it really supports is
+that the structure does not obviously hinge on bit 1.
+
 Position 3 is **not a "fade slot"** in this: it appears in nearly every behaviour the `-A`
 has — `{3}` white only, `{3,4}` fade, `{3,5}` chase, `{3,6,7}` steady, `{3,7}` blinking,
 `{3,4,5}` dark. Fade hangs on the combination `{3,4}`, not on any single position.
