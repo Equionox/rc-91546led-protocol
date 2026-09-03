@@ -141,8 +141,8 @@ Eingangsrahmen erreichen nur **35** verschiedene Codes.
 Positionsbits und die Abschlusslänge, also **512 unterscheidbare Codes**. Gesendet wurden
 bisher nur die **256 mit Bit 1** (35 aus den Rahmen der `-B`, 221 im Durchlauf vom
 2026-08-28). Die 256 Codes **ohne** Bit 1 sind **keine Duplikate**, wie hier bis zum
-2026-09-02 behauptet — von ihnen sind nur drei geprüft, und einer davon zeigte einen neuen
-Effekt. **In diesem Protokoll ist also durchaus noch etwas zu finden.**
+2026-09-02 behauptet — von ihnen sind nur vier geprüft, und **zwei davon zeigten neue Effekte.**
+In diesem Protokoll ist also durchaus noch etwas zu finden.
 
 ### Keine versteckte Feinstruktur
 
@@ -439,10 +439,20 @@ ohne Bit 1 sind bisher nur drei geprüft:
 
 | Maske ohne Bit 1 | Ergebnis |
 |---|---|
-| `{5}` | Lauflicht, weiß **dauerhaft aus** — ein Effekt, den die `-B` nicht senden kann |
+| `{5}` | Lauflicht, weiß **dauerhaft aus** — die `-B` kann das nicht senden |
+| `{3,5}` | Lauflicht, weiß **dauerhaft an** — ebenfalls nicht über die `-B` erreichbar |
 | `{3,4}` | Fade, weiß an — wie mit Bit 1 |
 | `{4,5}` | rot dauerhaft, weiß aus — wie mit Bit 1 |
-| `{}` `{3}` `{4}` `{3,5}` `{3,4,5}` | **nie geprüft** |
+| `{}` `{3}` `{4}` `{3,4,5}` | **nie geprüft** |
+
+**In den Lauflicht-Masken ist Bit 1 dasjenige, das die weiße LED flackern lässt.** Ohne
+Bit 1 steht sie still — bei `{3,5}` an, bei `{5}` aus. Mit Bit 1 blitzt sie bei `{3,5}`
+kurz auf und setzt bei `{5}` kurz aus. Zwei Masken, zweimal dasselbe Bit, zweimal derselbe
+Zusammenhang. Bei `{3,4}` und `{4,5}`, wo die weiße LED ohnehin unbewegt ist, ändert Bit 1
+nichts — das passt zusammen.
+
+Damit sind zwei Effekte bekannt, die die Originalanlage **nicht erzeugen kann**: Lauflicht
+mit ruhigem Weiß, einmal an und einmal aus. Wer die `-B` ersetzt, gewinnt sie dazu.
 
 **Zur Fade-Frage:** „Fade ohne die weiße LED" ist weiterhin nicht gefunden — Fade tritt nur
 bei `{3,4}` auf, und dort ist weiß in beiden Bit-1-Varianten an. Der frühere Schluss „es
@@ -693,8 +703,8 @@ anpassen, darauf aufbauen; nur der Copyright-Hinweis muss mit.
 
 Korrekturen und Ergänzungen willkommen — bitte als Issue. Offen ist insbesondere:
 
-- **die 256 Codes ohne Bit 1 sind fast unerforscht.** Nur drei sind geprüft, und einer
-  lieferte einen neuen Effekt (Lauflicht mit dauerhaft ausgeschalteter weißer LED). Das ist
+- **die 256 Codes ohne Bit 1 sind fast unerforscht.** Nur vier sind geprüft, und **zwei**
+  lieferten neue Effekte (Lauflicht mit ruhigem Weiß, einmal aus und einmal an). Das ist
   die aussichtsreichste Stelle für weitere Funde — die `-B` sendet dort nie hin.
 
 - ob `3,7`, `4,7`, `5,7` und `7,8` mit *derselben Rate* blinken, ist offen — der Eigendrift

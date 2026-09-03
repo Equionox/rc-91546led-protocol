@@ -138,8 +138,8 @@ onto only **35** distinct codes.
 position bits and the trailing length: **512 distinguishable codes**. Only the **256 with
 bit 1** have been sent so far (35 from the `-B`'s frames, 221 in the sweep of 2026-08-28).
 The 256 codes **without** bit 1 are **not duplicates**, as claimed here until 2026-09-02 —
-only three of them have been tested, and one showed a new effect. **So there is still
-something to find in this protocol.**
+only four of them have been tested, and **two showed new effects.** So there is still
+something to find in this protocol.
 
 ### No hidden fine structure
 
@@ -422,10 +422,19 @@ without bit 1, only three have been tested:
 
 | mask without bit 1 | result |
 |---|---|
-| `{5}` | chase, white **permanently off** — an effect the `-B` cannot send |
+| `{5}` | chase, white **permanently off** — the `-B` cannot send this |
+| `{3,5}` | chase, white **permanently on** — also unreachable through the `-B` |
 | `{3,4}` | fade, white on — same as with bit 1 |
 | `{4,5}` | steady red, white off — same as with bit 1 |
-| `{}` `{3}` `{4}` `{3,5}` `{3,4,5}` | **never tested** |
+| `{}` `{3}` `{4}` `{3,4,5}` | **never tested** |
+
+**In the chase masks, bit 1 is what makes the white LED flicker.** Without bit 1 it sits
+still — on for `{3,5}`, off for `{5}`. With bit 1 it briefly flashes on `{3,5}` and briefly
+drops out on `{5}`. Two masks, the same bit, the same relationship both times. On `{3,4}`
+and `{4,5}`, where the white LED is motionless anyway, bit 1 changes nothing — which fits.
+
+That gives two effects the original system **cannot produce**: a chase with a steady white
+LED, once on and once off. Replacing the `-B` gains you those.
 
 **On the fade question:** "fade without the white LED" is still not found — fade occurs
 only on `{3,4}`, and there white is on in both bit-1 variants. But the earlier conclusion
@@ -672,9 +681,9 @@ on it; just keep the copyright notice.
 
 Corrections and additions are welcome — open an issue. In particular:
 
-- **the 256 codes without bit 1 are almost unexplored.** Only three have been tested, and
-  one produced a new effect (chase with the white LED permanently off). That is the most
-  promising place to look for more — the `-B` never sends there.
+- **the 256 codes without bit 1 are almost unexplored.** Only four have been tested, and
+  **two** produced new effects (a chase with a steady white LED, once off and once on).
+  That is the most promising place to look for more — the `-B` never sends there.
 
 - whether `3,7`, `4,7`, `5,7` and `7,8` blink at the *same rate* is open — the boards'
   own drift makes that hard to measure
