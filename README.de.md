@@ -449,10 +449,15 @@ ohne Bit 1 sind bisher nur drei geprüft:
 | `{}` | dunkel — das ist der AUS-Code |
 
 **Der differenzierte Bereich ist damit vollständig, jetzt mit Bit 1 mitgezählt:** acht
-Masken mal zwei Bit-1-Zustände, und alle sind gesehen (die einzige Ausnahme ist die leere
-Maske *mit* Bit 1, die nie einzeln beschrieben wurde). Zwei der acht Masken reagieren auf
-Bit 1, sechs nicht. **Bit 1 entscheidet nicht über Gültigkeit**: `{3,4,5}` wird in beiden
-Zuständen verworfen.
+Masken mal zwei Bit-1-Zustände, **alle 16 gesehen.** Nur zwei der acht Masken reagieren auf
+Bit 1 — die beiden Lauflicht-Masken —, die anderen sechs sind identisch.
+
+Zwei Grenzen für Bit 1 fallen dabei mit ab:
+
+- **Es entscheidet nicht über Gültigkeit.** `{3,4,5}` wird in beiden Zuständen verworfen.
+- **Es löst allein nichts aus.** Die leere Maske mit Bit 1 (`100000000`) bleibt dunkel, wie
+  der AUS-Code. Es gibt also **zwei** Aus-Codes: `000000000` und `100000000`. Was zählt, ist
+  allein, dass keine Position gesetzt ist.
 
 **Bit 1 wirkt nur dort, wo die weiße LED animiert ist.** In den beiden Lauflicht-Masken
 nimmt es das Flackern weg: ohne Bit 1 steht Weiß still — bei `{3,5}` an, bei `{5}` aus; mit

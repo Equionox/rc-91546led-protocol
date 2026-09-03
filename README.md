@@ -432,10 +432,15 @@ without bit 1, only three have been tested:
 | `{}` | dark — that is the OFF code |
 
 **The differentiated range is now complete, bit 1 included in the count:** eight masks
-times two bit-1 states, and all of them have been seen (the one exception is the empty mask
-*with* bit 1, which was never described on its own). Two of the eight masks respond to
-bit 1, six do not. **Bit 1 does not decide validity**: `{3,4,5}` is rejected in both
-states.
+times two bit-1 states, **all 16 seen.** Only two of the eight masks respond to bit 1 — the
+two chase masks — the other six are identical.
+
+Two limits on bit 1 fall out of this:
+
+- **It does not decide validity.** `{3,4,5}` is rejected in both states.
+- **On its own it triggers nothing.** The empty mask with bit 1 (`100000000`) stays dark,
+  like the OFF code. So there are **two** off codes, `000000000` and `100000000`: all that
+  counts is that no position is set.
 
 **Bit 1 only acts where the white LED is animated.** In the two chase masks it removes the
 flicker: without bit 1 white sits still — on for `{3,5}`, off for `{5}`; with bit 1 it
