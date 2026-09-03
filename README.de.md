@@ -441,15 +441,22 @@ ohne Bit 1 sind bisher nur drei geprüft:
 |---|---|
 | `{5}` | Lauflicht, weiß **dauerhaft aus** — die `-B` kann das nicht senden |
 | `{3,5}` | Lauflicht, weiß **dauerhaft an** — ebenfalls nicht über die `-B` erreichbar |
+| `{3}` | Ring aus, nur weiß — wie mit Bit 1 |
 | `{3,4}` | Fade, weiß an — wie mit Bit 1 |
 | `{4,5}` | rot dauerhaft, weiß aus — wie mit Bit 1 |
-| `{}` `{3}` `{4}` `{3,4,5}` | **nie geprüft** |
+| `{}` | dunkel — das ist der AUS-Code |
+| `{4}` `{3,4,5}` | **nie geprüft**, nur noch diese zwei |
 
-**In den Lauflicht-Masken ist Bit 1 dasjenige, das die weiße LED flackern lässt.** Ohne
-Bit 1 steht sie still — bei `{3,5}` an, bei `{5}` aus. Mit Bit 1 blitzt sie bei `{3,5}`
-kurz auf und setzt bei `{5}` kurz aus. Zwei Masken, zweimal dasselbe Bit, zweimal derselbe
-Zusammenhang. Bei `{3,4}` und `{4,5}`, wo die weiße LED ohnehin unbewegt ist, ändert Bit 1
-nichts — das passt zusammen.
+**Bit 1 wirkt nur dort, wo die weiße LED animiert ist.** In den beiden Lauflicht-Masken
+nimmt es das Flackern weg: ohne Bit 1 steht Weiß still — bei `{3,5}` an, bei `{5}` aus; mit
+Bit 1 blitzt es bei `{3,5}` kurz auf und setzt bei `{5}` kurz aus. In den Masken mit ruhigem
+Weiß — `{3}`, `{3,4}`, `{4,5}` — ändert Bit 1 **nichts**. Fünf Masken, ein durchgängiger
+Zusammenhang.
+
+Position 3 ist dabei **keine „Fade-Stelle"**: sie kommt in fast jedem Verhalten vor, das die
+`-A` kennt — `{3}` nur weiß, `{3,4}` Fade, `{3,5}` Lauflicht, `{3,6,7}` Dauerlicht, `{3,7}`
+Blinken, `{3,4,5}` dunkel. Fade hängt an der Kombination `{3,4}`, nicht an einer einzelnen
+Position.
 
 Damit sind zwei Effekte bekannt, die die Originalanlage **nicht erzeugen kann**: Lauflicht
 mit ruhigem Weiß, einmal an und einmal aus. Wer die `-B` ersetzt, gewinnt sie dazu.

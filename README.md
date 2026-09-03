@@ -424,14 +424,21 @@ without bit 1, only three have been tested:
 |---|---|
 | `{5}` | chase, white **permanently off** — the `-B` cannot send this |
 | `{3,5}` | chase, white **permanently on** — also unreachable through the `-B` |
+| `{3}` | ring off, white only — same as with bit 1 |
 | `{3,4}` | fade, white on — same as with bit 1 |
 | `{4,5}` | steady red, white off — same as with bit 1 |
-| `{}` `{3}` `{4}` `{3,4,5}` | **never tested** |
+| `{}` | dark — that is the OFF code |
+| `{4}` `{3,4,5}` | **never tested**, only these two left |
 
-**In the chase masks, bit 1 is what makes the white LED flicker.** Without bit 1 it sits
-still — on for `{3,5}`, off for `{5}`. With bit 1 it briefly flashes on `{3,5}` and briefly
-drops out on `{5}`. Two masks, the same bit, the same relationship both times. On `{3,4}`
-and `{4,5}`, where the white LED is motionless anyway, bit 1 changes nothing — which fits.
+**Bit 1 only acts where the white LED is animated.** In the two chase masks it removes the
+flicker: without bit 1 white sits still — on for `{3,5}`, off for `{5}`; with bit 1 it
+briefly flashes on `{3,5}` and briefly drops out on `{5}`. In the masks with a steady white
+LED — `{3}`, `{3,4}`, `{4,5}` — bit 1 changes **nothing**. Five masks, one consistent
+relationship.
+
+Position 3 is **not a "fade slot"** in this: it appears in nearly every behaviour the `-A`
+has — `{3}` white only, `{3,4}` fade, `{3,5}` chase, `{3,6,7}` steady, `{3,7}` blinking,
+`{3,4,5}` dark. Fade hangs on the combination `{3,4}`, not on any single position.
 
 That gives two effects the original system **cannot produce**: a chase with a steady white
 LED, once on and once off. Replacing the `-B` gains you those.
