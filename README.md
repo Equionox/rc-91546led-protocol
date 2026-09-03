@@ -529,9 +529,13 @@ blink switch.
 | `{5}` | red ring chase, white on | blink |
 | `{6}` | **blink** | **steady light** |
 
-`{6}` blinks without bit 1 too — bit 1 has no effect there. And the two boards blink at
-**different rates** while doing so, a second independent data point for the drift of the
-blink effects.
+`{6}` blinks without bit 1 too — bit 1 has no effect there. **Checked side by side:**
+`10000001` on the left, `00000001` on the right, set within the same frame — both sides
+blink all LEDs in the same shape. Rate and phase are not comparable for blink effects,
+those drift anyway; the shape is, and it matches.
+
+And the two boards blink at **different rates** while doing so — a second independent data
+point for the drift of the blink effects.
 | `{}` | **dark** | **blink** |
 
 So if you drive an `-A` yourself, you have to transmit the trailing length too.

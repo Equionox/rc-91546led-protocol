@@ -548,9 +548,13 @@ Blink-Schalter.
 | `{5}` | roter Ring Lauflicht, weiß an | Blinken |
 | `{6}` | **Blinken** | **Dauerlicht** |
 
-`{6}` ist auch ohne Bit 1 Blinken — dort wirkt Bit 1 nicht. Und die beiden Platinen blinken
-dabei **unterschiedlich schnell**, ein zweiter unabhängiger Belegpunkt für den Drift der
-Blinkeffekte.
+`{6}` ist auch ohne Bit 1 Blinken — dort wirkt Bit 1 nicht. **Nebeneinander geprüft:**
+`10000001` links, `00000001` rechts, im selben Rahmen gesetzt — beide Seiten blinken alle
+LEDs in gleicher Form. Takt und Phase sind bei Blinkeffekten nicht vergleichbar, die
+driften ohnehin; vergleichbar ist die Form, und die stimmt überein.
+
+Und die beiden Platinen blinken dabei **unterschiedlich schnell** — ein zweiter
+unabhängiger Belegpunkt für den Drift der Blinkeffekte.
 | `{}` | **dunkel** | **Blinken** |
 
 Wer die `-A` selbst ansteuert, muss die Abschlusslänge also mit übertragen.
