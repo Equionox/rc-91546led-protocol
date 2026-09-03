@@ -442,11 +442,14 @@ Two limits on bit 1 fall out of this:
   like the OFF code. So there are **two** off codes, `000000000` and `100000000`: all that
   counts is that no position is set.
 
-**Bit 1 only acts where the white LED is animated.** In the two chase masks it removes the
-flicker: without bit 1 white sits still — on for `{3,5}`, off for `{5}`; with bit 1 it
-briefly flashes on `{3,5}` and briefly drops out on `{5}`. In the masks with a steady white
-LED — `{3}`, `{3,4}`, `{4,5}` — bit 1 changes **nothing**. Five masks, one consistent
-relationship.
+**Bit 1 only acts in the two chase masks.** There it takes the flicker off the white light:
+without bit 1 white sits still — on for `{3,5}`, off for `{5}`; with bit 1 it briefly
+flashes on `{3,5}` and briefly drops out on `{5}`. In every other mask tested it changes
+**nothing**, including `{3}`, `{3,4}`, `{4,5}`, `{4}`, `{3,4,5}` and `{6}`.
+
+*The obvious generalisation "bit 1 acts where the white LED is animated" stood here briefly
+and is wrong: on `{6}` all LEDs blink, the white one included, and bit 1 still changes
+nothing there. It stays with the two chase masks — a lookup table again, not a rule.*
 
 **Does the family structure hold without bit 1?** One sample says yes: `{1,3}` without
 bit 1 gives the same brief flash as with bit 1 — so the blink family wins over the 3 there
@@ -525,6 +528,10 @@ blink switch.
 | `{4}` | steady light | blink |
 | `{5}` | red ring chase, white on | blink |
 | `{6}` | **blink** | **steady light** |
+
+`{6}` blinks without bit 1 too — bit 1 has no effect there. And the two boards blink at
+**different rates** while doing so, a second independent data point for the drift of the
+blink effects.
 | `{}` | **dark** | **blink** |
 
 So if you drive an `-A` yourself, you have to transmit the trailing length too.

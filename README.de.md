@@ -459,11 +459,15 @@ Zwei Grenzen für Bit 1 fallen dabei mit ab:
   der AUS-Code. Es gibt also **zwei** Aus-Codes: `000000000` und `100000000`. Was zählt, ist
   allein, dass keine Position gesetzt ist.
 
-**Bit 1 wirkt nur dort, wo die weiße LED animiert ist.** In den beiden Lauflicht-Masken
-nimmt es das Flackern weg: ohne Bit 1 steht Weiß still — bei `{3,5}` an, bei `{5}` aus; mit
-Bit 1 blitzt es bei `{3,5}` kurz auf und setzt bei `{5}` kurz aus. In den Masken mit ruhigem
-Weiß — `{3}`, `{3,4}`, `{4,5}` — ändert Bit 1 **nichts**. Fünf Masken, ein durchgängiger
-Zusammenhang.
+**Bit 1 wirkt nur in den beiden Lauflicht-Masken.** Dort nimmt es dem weißen Licht das
+Flackern: ohne Bit 1 steht Weiß still — bei `{3,5}` an, bei `{5}` aus; mit Bit 1 blitzt es
+bei `{3,5}` kurz auf und setzt bei `{5}` kurz aus. In allen übrigen geprüften Masken ändert
+Bit 1 **nichts**, auch nicht in `{3}`, `{3,4}`, `{4,5}`, `{4}`, `{3,4,5}` und `{6}`.
+
+*Die naheliegende Verallgemeinerung „Bit 1 wirkt, wo die weiße LED animiert ist" stand hier
+kurzzeitig und ist falsch: bei `{6}` blinken alle LEDs, die weiße also auch, und Bit 1
+ändert dort trotzdem nichts. Es bleibt bei den zwei Lauflicht-Masken — wieder eine
+Nachschlagetabelle, keine Regel.*
 
 **Gilt die Familienstruktur auch ohne Bit 1?** Eine Stichprobe sagt ja: `{1,3}` ohne Bit 1
 liefert dasselbe kurze Aufblinken wie mit Bit 1 — die Blink-Familie setzt sich also auch
@@ -543,6 +547,10 @@ Blink-Schalter.
 | `{4}` | Dauerlicht | Blinken |
 | `{5}` | roter Ring Lauflicht, weiß an | Blinken |
 | `{6}` | **Blinken** | **Dauerlicht** |
+
+`{6}` ist auch ohne Bit 1 Blinken — dort wirkt Bit 1 nicht. Und die beiden Platinen blinken
+dabei **unterschiedlich schnell**, ein zweiter unabhängiger Belegpunkt für den Drift der
+Blinkeffekte.
 | `{}` | **dunkel** | **Blinken** |
 
 Wer die `-A` selbst ansteuert, muss die Abschlusslänge also mit übertragen.
