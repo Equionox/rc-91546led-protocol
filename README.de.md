@@ -442,10 +442,17 @@ ohne Bit 1 sind bisher nur drei geprüft:
 | `{5}` | Lauflicht, weiß **dauerhaft aus** — die `-B` kann das nicht senden |
 | `{3,5}` | Lauflicht, weiß **dauerhaft an** — ebenfalls nicht über die `-B` erreichbar |
 | `{3}` | Ring aus, nur weiß — wie mit Bit 1 |
+| `{4}` | Dauerlicht auf allen — wie mit Bit 1 |
 | `{3,4}` | Fade, weiß an — wie mit Bit 1 |
 | `{4,5}` | rot dauerhaft, weiß aus — wie mit Bit 1 |
+| `{3,4,5}` | **verworfen, dunkel** — wie mit Bit 1 |
 | `{}` | dunkel — das ist der AUS-Code |
-| `{4}` `{3,4,5}` | **nie geprüft**, nur noch diese zwei |
+
+**Der differenzierte Bereich ist damit vollständig, jetzt mit Bit 1 mitgezählt:** acht
+Masken mal zwei Bit-1-Zustände, und alle sind gesehen (die einzige Ausnahme ist die leere
+Maske *mit* Bit 1, die nie einzeln beschrieben wurde). Zwei der acht Masken reagieren auf
+Bit 1, sechs nicht. **Bit 1 entscheidet nicht über Gültigkeit**: `{3,4,5}` wird in beiden
+Zuständen verworfen.
 
 **Bit 1 wirkt nur dort, wo die weiße LED animiert ist.** In den beiden Lauflicht-Masken
 nimmt es das Flackern weg: ohne Bit 1 steht Weiß still — bei `{3,5}` an, bei `{5}` aus; mit

@@ -425,10 +425,17 @@ without bit 1, only three have been tested:
 | `{5}` | chase, white **permanently off** — the `-B` cannot send this |
 | `{3,5}` | chase, white **permanently on** — also unreachable through the `-B` |
 | `{3}` | ring off, white only — same as with bit 1 |
+| `{4}` | steady light on all — same as with bit 1 |
 | `{3,4}` | fade, white on — same as with bit 1 |
 | `{4,5}` | steady red, white off — same as with bit 1 |
+| `{3,4,5}` | **rejected, dark** — same as with bit 1 |
 | `{}` | dark — that is the OFF code |
-| `{4}` `{3,4,5}` | **never tested**, only these two left |
+
+**The differentiated range is now complete, bit 1 included in the count:** eight masks
+times two bit-1 states, and all of them have been seen (the one exception is the empty mask
+*with* bit 1, which was never described on its own). Two of the eight masks respond to
+bit 1, six do not. **Bit 1 does not decide validity**: `{3,4,5}` is rejected in both
+states.
 
 **Bit 1 only acts where the white LED is animated.** In the two chase masks it removes the
 flicker: without bit 1 white sits still — on for `{3,5}`, off for `{5}`; with bit 1 it
