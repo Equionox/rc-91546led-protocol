@@ -112,6 +112,11 @@ So the actual format is:
     trailing H   position 7      H3 = set, H1 = not set
     position 8   cannot be transmitted
 
+**Re-checked on 2026-09-02, simultaneously instead of sequentially:** `10001100` on the
+left and `00001100` on the right, both channels set within the same frame — the fades run
+**in step**. The first demonstration was sequential and could have missed a difference;
+this one could not.
+
 **The trailing pulse is the eighth position slot.** It does not behave like a modifier but
 like another mask bit — there was simply no room left in the bit field, so it is appended
 as a long pulse. Read that way, the 36 frames map onto **35 masks without a single
@@ -493,6 +498,15 @@ it is likely that the ring animations are **driven by the frame** while the blin
 from a free-running counter. That fits the next section: for a frame-driven animation, a
 code change restarting it is exactly what you would expect — it would be the same
 mechanism.
+
+**The rate is locked, the phase is not.** Set both sides to the same code *at the same
+time* and they stay in step indefinitely. Set them **one after the other** — two separate
+commands a few milliseconds apart — and they run out of phase, and that offset persists:
+it never closes, precisely because the animations do not drift. So the phase depends on
+when each board last saw a **code change**, which ties in with the next section.
+
+In practice: to keep two boards in step, set both codes within the **same frame**. To
+offset them deliberately, set them one after the other.
 
 *Caveat: "frame-driven" is the interpretation. What was observed is two boards staying in
 step on the same frame stream. A direct test would be to change the unit time and see

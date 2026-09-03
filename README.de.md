@@ -113,6 +113,11 @@ Das tatsächliche Format ist also:
     Abschluss    Position 7      H3 = gesetzt, H1 = nicht gesetzt
     Position 8   nicht übertragbar
 
+**Nachgeprüft am 2026-09-02, gleichzeitig statt nacheinander:** `10001100` links und
+`00001100` rechts, beide Kanäle im selben Rahmen gesetzt — die Fades laufen **im
+Gleichschritt**. Der erste Nachweis war sequenziell und hätte einen Unterschied übersehen
+können; dieser nicht.
+
 **Der Abschlussimpuls ist die achte Positionsstelle.** Er verhält sich nicht wie ein
 Modifikator, sondern wie ein weiteres Maskenbit — es fehlte nur der Platz im Bitfeld, also
 wird es als langer Impuls angehängt. Mit dieser Lesart bilden die 36 Rahmen **35 Masken
@@ -371,6 +376,13 @@ Nach der niedrigsten gesetzten Position — Position 7 und 8 haben kein Bit:
 | 6 allein, oder 7 allein | Blinken aller LEDs |
 | gar nichts | dunkel |
 
+**Die Dauerlicht-Gruppe ist nebeneinander geprüft** (2026-09-02): `4,8` als Referenz gegen
+`3,6`, `4,6`, `5,6` und `6,7`, jeweils gleichzeitig auf den beiden Scheinwerfern. Alle vier
+identisch — kein Unterschied in Helligkeit, weißer LED oder Bewegung. `6,8` sendet
+denselben Code wie `6,7`. Das ist die belastbarere Methode: die Zusammenfassung stammte
+ursprünglich aus **sequenziellen** Vergleichen, und genau so war der Unterschied zwischen
+`3,5` und `5,8` durchgerutscht.
+
 **Es gibt keine „Familie 6".** `{6,7}` ergibt Dauerlicht, aber `{6}` allein und `{7}` allein
 ergeben beide Blinken. Die `-B` kann `{6}` nie senden, weil sie zu einer 6 immer H3 setzt —
 deshalb sah es aus, als bedeute die 6 Dauerlicht. Gemessen wurde `{6}` am 2026-09-01 mit
@@ -499,6 +511,16 @@ nahe, dass die Ring-Animationen **aus dem Rahmen getrieben** werden, während da
 aus einem freilaufenden Zähler kommt. Das passt zum nächsten Abschnitt: dass ein
 Codewechsel die Animation zurücksetzt, ist bei einer rahmengetriebenen Animation genau die
 zu erwartende Folge — es wäre derselbe Mechanismus.
+
+**Die Rate ist gekoppelt, die Phase nicht.** Beide Seiten *gleichzeitig* auf denselben Code
+gesetzt laufen dauerhaft im Gleichschritt. Werden sie **nacheinander** gesetzt — zwei
+getrennte Befehle, wenige Millisekunden auseinander — laufen sie im Wechsel, und dieser
+Versatz bleibt: er verschwindet nicht mehr, weil die Animationen ja nicht driften. Die
+Phase hängt also daran, wann jede Platine zuletzt einen **Codewechsel** gesehen hat, und
+das fügt sich mit dem nächsten Abschnitt zusammen.
+
+Praktisch heißt das: wer zwei Platinen im Gleichschritt haben will, muss beide Codes im
+**selben Rahmen** setzen. Wer sie absichtlich versetzt haben will, setzt sie nacheinander.
 
 *Vorbehalt: „rahmengetrieben" ist die Deutung. Beobachtet ist der Gleichschritt zweier
 Platinen am selben Rahmenstrom. Ein direkter Nachweis wäre, die Einheitszeit zu verändern
