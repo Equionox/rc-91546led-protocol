@@ -548,6 +548,13 @@ Blink-Schalter.
 | `{5}` | roter Ring Lauflicht, weiß an | Blinken |
 | `{6}` | **Blinken** | **Dauerlicht** |
 
+Auch **`{5,7}`** verhält sich mit und ohne Bit 1 gleich: nebeneinander gesetzt zeigen beide
+Seiten dieselbe Form. Ob Bit 1 die **Anfangsphase** verschiebt, ließ sich nicht klären — mit
+einer Dunkelphase als Startsignal und je sechs Wiederholungen fiel es mal so, mal so aus,
+also zufällig. Bei einem Blinkeffekt, den der Drift binnen Sekunden überdeckt, ist die
+Anfangsphase mit dem Auge nicht beurteilbar; dafür bräuchte es den Fotodiodenaufnehmer.
+**Als Unterschied gilt das damit nicht.**
+
 `{6}` ist auch ohne Bit 1 Blinken — dort wirkt Bit 1 nicht. **Nebeneinander geprüft:**
 `10000001` links, `00000001` rechts, im selben Rahmen gesetzt — beide Seiten blinken alle
 LEDs in gleicher Form. Takt und Phase sind bei Blinkeffekten nicht vergleichbar, die

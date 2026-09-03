@@ -529,6 +529,13 @@ blink switch.
 | `{5}` | red ring chase, white on | blink |
 | `{6}` | **blink** | **steady light** |
 
+**`{5,7}`** behaves the same with and without bit 1 as well: set side by side, both sides
+show the same shape. Whether bit 1 shifts the **initial phase** could not be settled — with
+a dark phase as a start cue and six repetitions each, it came out differently each time,
+i.e. at random. For a blink effect that drift washes out within seconds, the initial phase
+cannot be judged by eye; that would need the photodiode pickup. **So it does not count as a
+difference.**
+
 `{6}` blinks without bit 1 too — bit 1 has no effect there. **Checked side by side:**
 `10000001` on the left, `00000001` on the right, set within the same frame — both sides
 blink all LEDs in the same shape. Rate and phase are not comparable for blink effects,
