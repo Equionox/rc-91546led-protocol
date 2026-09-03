@@ -93,29 +93,36 @@ From the two long positions `(a,b)` of the input frame:
 Checked against all 36 measured frames: **zero deviations.** A reference implementation
 is in [`example/translate.c`](example/translate.c).
 
-### Bit 1 is not a start marker — the `-A` ignores it
+### Bit 1 is not a start marker — but it is not meaningless either
 
-It looks like a frame marker because the `-B` sets it without exception. It has no effect.
-Demonstrated on 2026-09-01 with two codes from different families:
+It looks like a frame marker because the `-B` sets it without exception. A start marker it
+is not: frames without bit 1 are accepted and produce effects.
 
-| raw code | effect |
-|---|---|
-| `10001100` H1 | red ring fade, white on (frame `3,4`) |
-| `00001100` H1 | **identical** — the same fade |
-| `10000110` H1 | red ring steady, white off (frame `4,5`) |
-| `00000110` H1 | **identical** — the same steady red |
+**But it is not without effect either** — corrected 2026-09-02. On some masks it changes
+nothing; on others it switches the white LED:
 
-So the actual format is:
+| mask | with bit 1 | without bit 1 |
+|---|---|---|
+| `{3,4}` (`…011000`) | fade, white on | **identical** — fade, white on |
+| `{4,5}` (`…000110`) | steady red, white off | **identical** |
+| `{5}` (`…000010`) | chase, white **on** with a brief dropout | chase, white **permanently off** |
 
-    bit 1        no meaning
+On `{5}` the difference is unmistakable. Each row was recorded on its own, with the code
+running on **both** boards at once so no neighbour could fool the eye — and additionally
+head to head with `X <left> <right>`, which sets both channels within the same frame.
+
+So the format is:
+
+    bit 1        effective, but not on every mask
     bits 2..8    positions 0..6
     trailing H   position 7      H3 = set, H1 = not set
     position 8   cannot be transmitted
 
-**Re-checked on 2026-09-02, simultaneously instead of sequentially:** `10001100` on the
-left and `00001100` on the right, both channels set within the same frame — the fades run
-**in step**. The first demonstration was sequential and could have missed a difference;
-this one could not.
+**How the error happened.** The first demonstration (2026-09-01) tested two codes, `{3,4}`
+and `{4,5}` — on both of them the white LED is motionless anyway, so the difference *cannot*
+be seen there. The re-check on 2026-09-02 used `{3,4}` again and merely confirmed the same
+blind spot. Only the suggestion that bit 1 might affect the white LED specifically while the
+chase is running pointed at the right mask.
 
 **The trailing pulse is the eighth position slot.** It does not behave like a modifier but
 like another mask bit — there was simply no room left in the bit field, so it is appended
@@ -127,10 +134,12 @@ contradiction**, and the `(6,7)`/`(6,8)` collision explains itself: both transmi
 therefore produce the same code — the `-A` cannot tell them apart. The 36 input frames map
 onto only **35** distinct codes.
 
-**Limit of the search space:** 7 position bits times 2 trailing lengths = **256
-distinguishable codes**, and every one of them has been sent. The 256 codes with bit 1 = 0
-are exact duplicates, not unexplored territory. There is nothing left to find in this
-protocol.
+**Limit of the search space — and half of it is unexplored.** What acts is bit 1, seven
+position bits and the trailing length: **512 distinguishable codes**. Only the **256 with
+bit 1** have been sent so far (35 from the `-B`'s frames, 221 in the sweep of 2026-08-28).
+The 256 codes **without** bit 1 are **not duplicates**, as claimed here until 2026-09-02 —
+only three of them have been tested, and one showed a new effect. **So there is still
+something to find in this protocol.**
 
 ### No hidden fine structure
 
@@ -146,8 +155,7 @@ complete.
 Eight zero bits, each sent as `H1 L3`, turn the `-A` **dark immediately**, not after a
 timeout.
 
-The reason is **not** the missing bit 1 — the `-A` ignores that anyway — but that **no
-position at all is set**. Same effect, different cause; in practice nothing changes.
+The reason is **not** the missing bit 1 but that **no position at all is set**. Same effect, different cause; in practice nothing changes.
 
 This is the key to arbitrary blinking. Any of the 35 effects can be alternated against
 black, down to one frame (116.5 ms) per phase.
@@ -197,11 +205,16 @@ combinations** of the 35 codes, e.g. chase on the left and steady red on the rig
 The `-B` could blink left and right separately (`(3,6)` / `(3,7)`) but only in the roles
 its firmware provides.
 
-**No hidden modes — and the search space is complete.** All **221** codes with bit 1 set
-that the `-B` never produces were sent, 4 s each. Not a single new effect. Together with
-the `-B`'s 35 codes that is all 256 distinguishable codes, because only 7 position bits
-and the trailing length have any effect; the 256 codes with bit 1 = 0 are exact
-duplicates. Dropping the `-B` saves a board but gains no functionality.
+**No hidden modes — but only in the half that was tested.** All **221** codes with bit 1
+set that the `-B` never produces were sent, 4 s each. Not a single new effect. Together
+with the `-B`'s 35 codes that is every code **with** bit 1.
+
+**The 256 codes without bit 1 have never been swept.** Until 2026-09-02 they were assumed
+to be exact duplicates; that is refuted. `{5}` without bit 1 gives a chase with the white
+LED **permanently off** — an effect the `-B` cannot produce. Expect more effects there.
+
+Dropping the `-B` saves a board and additionally opens up the half of the code range it
+never sends.
 
 **On the supply:** if both `-A` boards hang on a controller board's 3.3 V rail, its
 regulator may reach its limit. Flicker or resets when connecting the second board point
@@ -356,8 +369,9 @@ So there is no blanket fallback to blinking: positions 3, 4, 5 go dark.
 
 **Practical consequence:** combinations such as "fade without the white LED" cannot be
 assembled. The fade hangs on exactly one code, and all nine single-bit neighbours lead
-somewhere else. That is not a "not found" but a **does not exist** — see
-[The differentiated range is closed](#the-differentiated-range-is-closed).
+somewhere else. *Earlier versions called this a "does not exist" — that completeness proof
+was withdrawn on 2026-09-02, because bit 1 is effective and half the range therefore
+remains untested.*
 
 ### The families at a glance
 
@@ -384,7 +398,7 @@ over-general rules died here in a single day ("the lowest position wins", "H3 me
 blinking"). The behaviour is a lookup over the mask; the regularities above are patterns in
 it, not a derivation.
 
-### The differentiated range is closed
+### The differentiated range — closed only for codes with bit 1
 
 Masks containing 0, 1 or 2 end up in a blink family; masks containing 6 or 7 in steady
 light or blinking. **Anything that treats the red ring and the white LED separately must
@@ -402,14 +416,21 @@ been measured:
 | `{4,5}` | red ring steady, **white off** |
 | `{3,4,5}` | dark |
 
-**There are no feature bits.** "Fade" occurs in exactly one mask, "white off" in exactly
-one — and they are different ones. Neither `{3}` nor `{4}` alone fades. If there were a
-fade bit and a white-off bit, they would combine; they do not.
+**BUT this closure only holds for codes with bit 1** (corrected 2026-09-02). Since bit 1
+is effective, the differentiated range has **16** combinations, not eight. Of the eight
+without bit 1, only three have been tested:
 
-So the effects are **a menu of ready-made scenes, not an encoding built from features**:
-seven non-empty masks, six distinct pictures, picked by hand. Anyone looking for a
-combination that is not on this list — "fade without the white LED", say — is not looking
-for something undiscovered but for something that does not exist.
+| mask without bit 1 | result |
+|---|---|
+| `{5}` | chase, white **permanently off** — an effect the `-B` cannot send |
+| `{3,4}` | fade, white on — same as with bit 1 |
+| `{4,5}` | steady red, white off — same as with bit 1 |
+| `{}` `{3}` `{4}` `{3,5}` `{3,4,5}` | **never tested** |
+
+**On the fade question:** "fade without the white LED" is still not found — fade occurs
+only on `{3,4}`, and there white is on in both bit-1 variants. But the earlier conclusion
+"it does not exist" is **withdrawn**: it rested on the range being closed at eight masks.
+With 16 combinations, five of them never seen, that is no longer a proof.
 
 ### The two chase frames are not the same
 
@@ -583,15 +604,21 @@ Listed so nobody spends time re-testing it:
   drives 3.66 V and the `-A` runs off 3.3 V. An open-drain workaround with a pull-up was
   unnecessary, and was not even a valid test (the measurement showed zero edges because
   the pull-up was not on a live 5 V rail).
-- **"Bit 1 is the frame's start marker"** — wrong, the `-A` ignores it. `00001100` gives
-  the same fade as `10001100`, `00000110` the same steady red as `10000110`. The `-B` sets
-  the bit without exception, which is why it looked like a frame marker.
-- **"The 256 codes without a start bit are presumably invalid"** — wrong, they are **exact
-  duplicates** of the 256 with bit 1 set. The search space is therefore not half measured
-  but fully measured.
-- **"The `-A` has hidden modes"** — wrong, and since 2026-09-01 without any gap: what acts
-  is 7 position bits times 2 trailing lengths = 256 codes, all of them sent (35 from the
-  `-B`'s frames, 221 in the sweep). No new effect.
+- **"Bit 1 is the frame's start marker"** — wrong, frames without bit 1 are accepted. The
+  `-B` sets the bit without exception, which is why it looked like a frame marker.
+- **"Bit 1 has no effect"** — my own claim from 2026-09-01, refuted on 2026-09-02. It
+  rested on `{3,4}` and `{4,5}`, where the white LED is motionless anyway. On `{5}` bit 1
+  switches the white LED. **Confirmed twice, twice on the wrong mask** — the re-check
+  repeated the same blind spot.
+- **"The 256 codes without a start bit are presumably invalid"** — wrong, they produce
+  effects.
+- **"The 256 codes without bit 1 are exact duplicates"** — also wrong; my correction of
+  2026-09-01 overshot. The search space is **512** codes, and the half without bit 1 is
+  unexplored apart from three samples.
+- **"The `-A` has hidden modes"** — refuted for the codes **with** bit 1: all 256 sent (35
+  from the `-B`'s frames, 221 in the sweep), no new effect. It does not hold for the half
+  **without** bit 1, where a new effect has already been found. *This entry stood here as
+  "refuted without any gap" on 2026-09-01 — that was premature.*
 - **"An unknown code always falls back to blinking"** — wrong. Positions 3, 4, 5 are
   rejected and the `-A` stays dark.
 - **"There is a return channel on the data line"** — implausible; there is nobody who
@@ -644,6 +671,10 @@ be trusted**, because modes that differ only on the missing lamps look identical
 on it; just keep the copyright notice.
 
 Corrections and additions are welcome — open an issue. In particular:
+
+- **the 256 codes without bit 1 are almost unexplored.** Only three have been tested, and
+  one produced a new effect (chase with the white LED permanently off). That is the most
+  promising place to look for more — the `-B` never sends there.
 
 - whether `3,7`, `4,7`, `5,7` and `7,8` blink at the *same rate* is open — the boards'
   own drift makes that hard to measure

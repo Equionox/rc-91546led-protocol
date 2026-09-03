@@ -94,29 +94,37 @@ Aus den beiden langen Positionen `(a,b)` des Eingangsrahmens:
 Geprüft gegen alle 36 gemessenen Rahmen: **0 Abweichungen.** Eine Referenzumsetzung
 liegt in [`example/translate.c`](example/translate.c).
 
-### Bit 1 ist keine Startmarke — die `-A` ignoriert es
+### Bit 1 ist keine Startmarke — aber wirkungslos ist es auch nicht
 
-Es sieht wie eine Rahmenmarke aus, weil die `-B` es ausnahmslos setzt. Es ist aber
-wirkungslos. Nachgewiesen am 2026-09-01 an zwei Codes aus verschiedenen Familien:
+Es sieht wie eine Rahmenmarke aus, weil die `-B` es ausnahmslos setzt. Eine Startmarke ist
+es nicht: Rahmen ohne Bit 1 werden anerkannt und liefern Effekte.
 
-| Rohcode | Wirkung |
-|---|---|
-| `10001100` H1 | roter Ring Fade, weiß an (Rahmen `3,4`) |
-| `00001100` H1 | **identisch** — derselbe Fade |
-| `10000110` H1 | roter Ring dauerhaft, weiß aus (Rahmen `4,5`) |
-| `00000110` H1 | **identisch** — dasselbe Dauerleuchten |
+**Wirkungslos ist es aber ebenfalls nicht** — Korrektur vom 2026-09-02. Bei manchen Masken
+ändert es nichts, bei anderen schaltet es die weiße LED:
 
-Das tatsächliche Format ist also:
+| Maske | mit Bit 1 | ohne Bit 1 |
+|---|---|---|
+| `{3,4}` (`…011000`) | Fade, weiß an | **identisch** — Fade, weiß an |
+| `{4,5}` (`…000110`) | rot dauerhaft, weiß aus | **identisch** |
+| `{5}` (`…000010`) | Lauflicht, weiß **an** mit kurzem Aussetzer | Lauflicht, weiß **dauerhaft aus** |
 
-    Bit 1        ohne Bedeutung
+Bei `{5}` ist der Unterschied eindeutig. Jede Zeile wurde einzeln aufgenommen, der Code
+jeweils auf **beiden** Platinen gleichzeitig, damit kein Nachbar das Auge täuscht — und
+zusätzlich direkt gegeneinander mit `X <links> <rechts>`, das beide Kanäle im selben Rahmen
+setzt.
+
+Das Format ist also:
+
+    Bit 1        wirksam, wirkt aber nicht bei jeder Maske
     Bit 2..8     Positionen 0..6
     Abschluss    Position 7      H3 = gesetzt, H1 = nicht gesetzt
     Position 8   nicht übertragbar
 
-**Nachgeprüft am 2026-09-02, gleichzeitig statt nacheinander:** `10001100` links und
-`00001100` rechts, beide Kanäle im selben Rahmen gesetzt — die Fades laufen **im
-Gleichschritt**. Der erste Nachweis war sequenziell und hätte einen Unterschied übersehen
-können; dieser nicht.
+**Wie der Fehler entstand.** Der erste Nachweis (2026-09-01) prüfte zwei Codes, `{3,4}` und
+`{4,5}` — bei beiden ist die weiße LED ohnehin unbewegt, dort *kann* man den Unterschied
+nicht sehen. Die Gegenprüfung am 2026-09-02 nahm wieder `{3,4}` und bestätigte nur dieselbe
+Blindstelle. Erst der Hinweis, Bit 1 könne die weiße LED gerade dann beeinflussen, wenn das
+Lauflicht läuft, führte auf die richtige Maske.
 
 **Der Abschlussimpuls ist die achte Positionsstelle.** Er verhält sich nicht wie ein
 Modifikator, sondern wie ein weiteres Maskenbit — es fehlte nur der Platz im Bitfeld, also
@@ -129,9 +137,12 @@ ohnehin H3 setzt.
 deshalb denselben Code — die `-A` kann sie prinzipiell nicht unterscheiden. Die 36
 Eingangsrahmen erreichen nur **35** verschiedene Codes.
 
-**Grenze des Suchraums:** 7 Positionsbits mal 2 Abschlusslängen = **256 unterscheidbare
-Codes**, und genau die sind alle gesendet worden. Die 256 Codes mit Bit 1 = 0 sind exakte
-Duplikate, kein unerforschtes Gebiet. Es gibt in diesem Protokoll nichts mehr zu finden.
+**Grenze des Suchraums — und die Hälfte davon ist unerforscht.** Wirksam sind Bit 1, sieben
+Positionsbits und die Abschlusslänge, also **512 unterscheidbare Codes**. Gesendet wurden
+bisher nur die **256 mit Bit 1** (35 aus den Rahmen der `-B`, 221 im Durchlauf vom
+2026-08-28). Die 256 Codes **ohne** Bit 1 sind **keine Duplikate**, wie hier bis zum
+2026-09-02 behauptet — von ihnen sind nur drei geprüft, und einer davon zeigte einen neuen
+Effekt. **In diesem Protokoll ist also durchaus noch etwas zu finden.**
 
 ### Keine versteckte Feinstruktur
 
@@ -146,8 +157,8 @@ gibt keine versteckten Synchronisationsimpulse. Das Signalmodell ist vollständi
 Acht Nullbits, jedes als `H1 L3`, schalten die `-A` **sofort** dunkel, nicht erst nach
 einer Zeitüberwachung.
 
-Der Grund ist **nicht** das fehlende Bit 1 — das ignoriert die `-A` ohnehin — sondern dass
-**keine einzige Position gesetzt** ist. Dieselbe Wirkung, andere Ursache; praktisch ändert
+Der Grund ist **nicht** das fehlende Bit 1, sondern dass **keine einzige Position gesetzt**
+ist. Dieselbe Wirkung, andere Ursache; praktisch ändert
 das nichts.
 
 Das ist der Schlüssel zu beliebigem Blinken. Jeder der 35 Effekte lässt sich gegen
@@ -200,11 +211,17 @@ auseinanderläuft. Damit sind **beliebige Kombinationen** der 35 Codes möglich,
 Lauflicht links und rotes Dauerlicht rechts. Die `-B` konnte links und rechts zwar
 getrennt blinken lassen (`(3,6)` / `(3,7)`), aber nur in den vorgesehenen Rollen.
 
-**Keine versteckten Modi — und der Suchraum ist vollständig.** Alle **221** Codes mit
+**Keine versteckten Modi — aber nur in der geprüften Hälfte.** Alle **221** Codes mit
 Bit 1, die die `-B` nie erzeugt, wurden gesendet, je 4 s. Kein einziger neuer Effekt.
-Zusammen mit den 35 Codes der `-B` sind das alle 256 unterscheidbaren Codes, denn wirksam
-sind nur 7 Positionsbits und die Abschlusslänge; die 256 Codes mit Bit 1 = 0 sind exakte
-Duplikate. Das Weglassen der `-B` spart eine Platine, bringt aber keinen Funktionsgewinn.
+Zusammen mit den 35 Codes der `-B` sind das alle 256 Codes **mit** Bit 1.
+
+**Die 256 Codes ohne Bit 1 sind nie durchmustert worden.** Bis zum 2026-09-02 galten sie
+als exakte Duplikate; das ist widerlegt (siehe [Bit 1](#bit-1-ist-keine-startmarke--aber-wirkungslos-ist-es-auch-nicht)).
+`{5}` ohne Bit 1 liefert Lauflicht mit **dauerhaft ausgeschalteter** weißer LED — einen
+Effekt, den die `-B` nicht erzeugen kann. Dort ist mit weiteren Effekten zu rechnen.
+
+Das Weglassen der `-B` spart eine Platine und erschließt zusätzlich die Hälfte des
+Codebereichs, die sie nie sendet.
 
 **Zur Versorgung:** Hängen beide `-A` an der 3,3-V-Schiene eines Controller-Boards, kann
 dessen Regler an die Grenze kommen. Flackern oder Neustarts beim Anschließen der zweiten
@@ -361,8 +378,9 @@ Einen pauschalen Rückfall auf Blinken gibt es also nicht: Positionen 3, 4, 5 ge
 
 **Praktische Folge:** Kombinationen wie „Fade ohne die weiße LED" lassen sich nicht
 zusammenbauen. Der Fade hängt an genau einem Code, und alle neun Ein-Bit-Nachbarn führen
-woanders hin. Das ist kein „nicht gefunden", sondern ein **existiert nicht** — siehe
-[Der differenzierte Bereich ist abgeschlossen](#der-differenzierte-bereich-ist-abgeschlossen).
+woanders hin. *Frühere Fassungen nannten das ein „existiert nicht" — der
+Vollständigkeitsbeweis ist am 2026-09-02 zurückgezogen worden, weil Bit 1 wirksam ist und
+damit die Hälfte des Bereichs ungeprüft bleibt.*
 
 ### Die Familien im Überblick
 
@@ -398,7 +416,7 @@ Mechanik. An einem einzigen Tag sind hier zwei zu allgemein formulierte Regeln g
 Nachschlagetabelle über die Maske; die Regelmäßigkeiten oben sind Muster darin, keine
 Herleitung.
 
-### Der differenzierte Bereich ist abgeschlossen
+### Der differenzierte Bereich — abgeschlossen nur für Codes mit Bit 1
 
 Masken mit 0, 1 oder 2 landen in einer Blink-Familie; Masken mit 6 oder 7 in Dauerlicht
 oder Blinken. **Alles, was roten Ring und weiße LED getrennt behandelt, muss deshalb eine
@@ -415,14 +433,22 @@ Teilmenge von `{3,4,5}` sein.** Davon gibt es genau acht, und alle acht sind gem
 | `{4,5}` | rotes Dauerleuchten, **weiß aus** |
 | `{3,4,5}` | dunkel |
 
-**Es gibt keine Merkmalsbits.** „Fade" tritt in genau einer Maske auf, „weiß aus" ebenfalls
-in genau einer — und es sind verschiedene. Weder `{3}` noch `{4}` allein fadet. Gäbe es ein
-Fade-Bit und ein Weiß-aus-Bit, ließen sie sich kombinieren; das ist nicht der Fall.
+**ABER: dieser Abschluss gilt nur für Codes mit Bit 1** (Korrektur 2026-09-02). Da Bit 1
+wirksam ist, hat der differenzierte Bereich **16** Kombinationen, nicht acht. Von den acht
+ohne Bit 1 sind bisher nur drei geprüft:
 
-Die Effekte sind also **eine Speisekarte fertiger Szenen, keine Kodierung aus Merkmalen**:
-sieben nichtleere Masken, sechs verschiedene Bilder, von Hand ausgesucht. Wer eine
-Kombination sucht, die nicht in dieser Liste steht — etwa „Fade ohne die weiße LED" —
-sucht nicht nach etwas Unentdecktem, sondern nach etwas, das es nicht gibt.
+| Maske ohne Bit 1 | Ergebnis |
+|---|---|
+| `{5}` | Lauflicht, weiß **dauerhaft aus** — ein Effekt, den die `-B` nicht senden kann |
+| `{3,4}` | Fade, weiß an — wie mit Bit 1 |
+| `{4,5}` | rot dauerhaft, weiß aus — wie mit Bit 1 |
+| `{}` `{3}` `{4}` `{3,5}` `{3,4,5}` | **nie geprüft** |
+
+**Zur Fade-Frage:** „Fade ohne die weiße LED" ist weiterhin nicht gefunden — Fade tritt nur
+bei `{3,4}` auf, und dort ist weiß in beiden Bit-1-Varianten an. Der frühere Schluss „es
+existiert nicht" ist aber **zurückgezogen**: er beruhte darauf, dass der Bereich mit acht
+Masken abgeschlossen sei. Bei 16 Kombinationen, von denen fünf nie gesehen wurden, ist das
+kein Beweis mehr.
 
 ### Die beiden Lauflicht-Rahmen sind nicht dasselbe
 
@@ -599,15 +625,20 @@ Aufgeführt, damit sie niemand erneut prüft:
   selbst nur 3,66 V, die `-A` läuft an 3,3 V. Der Open-Drain-Umweg mit Pull-up war
   unnötig und zudem kein gültiger Test (null Flanken, weil der Pull-up nicht an lebenden
   5 V hing).
-- **„Bit 1 ist die Startmarke des Rahmens"** — falsch, die `-A` ignoriert es. `00001100`
-  liefert denselben Fade wie `10001100`, `00000110` dasselbe Dauerleuchten wie `10000110`.
+- **„Bit 1 ist die Startmarke des Rahmens"** — falsch, Rahmen ohne Bit 1 werden anerkannt.
   Die `-B` setzt das Bit ausnahmslos, deshalb sah es wie eine Rahmenmarke aus.
-- **„Die 256 Codes ohne Startbit sind vermutlich ungültig"** — falsch, sie sind **exakte
-  Duplikate** der 256 mit Bit 1. Damit ist der Suchraum nicht halb, sondern vollständig
-  durchgemessen.
-- **„Die `-A` kennt versteckte Modi"** — widerlegt, und seit dem 2026-09-01 lückenlos:
-  wirksam sind 7 Positionsbits mal 2 Abschlusslängen = 256 Codes, alle gesendet (35 aus
-  den Rahmen der `-B`, 221 im Durchlauf). Kein neuer Effekt.
+- **„Bit 1 ist wirkungslos"** — meine eigene Behauptung vom 2026-09-01, am 2026-09-02
+  widerlegt. Sie stützte sich auf `{3,4}` und `{4,5}`, wo die weiße LED ohnehin unbewegt
+  ist. Bei `{5}` schaltet Bit 1 die weiße LED. **Zweimal bestätigt, zweimal an der falschen
+  Maske** — die Gegenprüfung wiederholte dieselbe Blindstelle.
+- **„Die 256 Codes ohne Startbit sind vermutlich ungültig"** — falsch, sie liefern Effekte.
+- **„Die 256 Codes ohne Bit 1 sind exakte Duplikate"** — ebenfalls falsch, meine Korrektur
+  vom 2026-09-01 überschoss. Der Suchraum ist **512** Codes, und die Hälfte ohne Bit 1 ist
+  bis auf drei Stichproben unerforscht.
+- **„Die `-A` kennt versteckte Modi"** — für die Codes **mit** Bit 1 widerlegt: alle 256
+  gesendet (35 aus den Rahmen der `-B`, 221 im Durchlauf), kein neuer Effekt. Für die
+  Hälfte **ohne** Bit 1 gilt das nicht, dort wurde bereits ein neuer Effekt gefunden.
+  *Diese These stand am 2026-09-01 als „lückenlos widerlegt" hier — das war zu früh.*
 - **„Ein unbekannter Code fällt immer auf Blinken zurück"** — widerlegt. Die Positionen
   3, 4, 5 werden verworfen, die `-A` bleibt dunkel.
 - **„Ein Rückkanal auf der Datenleitung"** — unplausibel, es gibt niemanden, der eine
@@ -661,6 +692,10 @@ aussehen.
 anpassen, darauf aufbauen; nur der Copyright-Hinweis muss mit.
 
 Korrekturen und Ergänzungen willkommen — bitte als Issue. Offen ist insbesondere:
+
+- **die 256 Codes ohne Bit 1 sind fast unerforscht.** Nur drei sind geprüft, und einer
+  lieferte einen neuen Effekt (Lauflicht mit dauerhaft ausgeschalteter weißer LED). Das ist
+  die aussichtsreichste Stelle für weitere Funde — die `-B` sendet dort nie hin.
 
 - ob `3,7`, `4,7`, `5,7` und `7,8` mit *derselben Rate* blinken, ist offen — der Eigendrift
   der Platinen macht das schwer messbar
