@@ -610,11 +610,17 @@ aus einem freilaufenden Zähler kommt. Das passt zum nächsten Abschnitt: dass e
 Codewechsel die Animation zurücksetzt, ist bei einer rahmengetriebenen Animation genau die
 zu erwartende Folge — es wäre derselbe Mechanismus.
 
-**Der Fade dauert zehn Rahmen.** Am 2026-09-06 nachgemessen: der Zyklus des roten Rings
-bei `{3,4}` liegt bei **7/6 s = 1166,7 ms**. Die Rahmenperiode ist 116,478 ms, das sind
-**10,02 Rahmen** — also mit 0,2 % Abweichung genau zehn. Eine glatte Rahmenzahl statt einer
-krummen Millisekundenzahl ist ein weiteres Argument dafür, dass die Ring-Animationen aus
+**Der Fade dauert vermutlich zehn Rahmen.** Für den Zyklus des roten Rings bei `{3,4}`
+liegt ein Wert von **7/6 s = 1166,7 ms** vor, ermittelt in einer früheren Arbeitssitzung;
+**die Messmethode ist nicht dokumentiert.** Die Rahmenperiode ist 116,478 ms, das sind
+**10,02 Rahmen** — mit 0,2 % Abweichung genau zehn. Eine glatte Rahmenzahl statt einer
+krummen Millisekundenzahl wäre ein weiteres Argument dafür, dass die Ring-Animationen aus
 dem Rahmenstrom getrieben werden.
+
+*Nicht unabhängig nachgeprüft.* Wer es belastbar machen will, zählt die Zyklen über eine
+längere Zeit gegen eine Uhr — etwa 30 Durchläufe — und teilt.
+
+
 
 Praktisch nützlich für Nachbauer: wer eigene Effekte zum Ring synchron laufen lassen will,
 rechnet in Rahmen und nimmt zehn davon für einen Fade-Zyklus. Über eine eigene
