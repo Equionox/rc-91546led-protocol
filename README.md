@@ -590,6 +590,16 @@ from a free-running counter. That fits the next section: for a frame-driven anim
 code change restarting it is exactly what you would expect — it would be the same
 mechanism.
 
+**The fade lasts ten frames.** Measured on 2026-09-06: the cycle of the red ring on `{3,4}`
+comes out at **7/6 s = 1166.7 ms**. The frame period is 116.478 ms, which makes it **10.02
+frames** — exactly ten, to within 0.2 %. A whole number of frames rather than a round
+number of milliseconds is another argument that the ring animations are driven by the frame
+stream.
+
+Practically useful if you are rebuilding this: to run your own effects in step with the
+ring, count in frames and use ten of them for a fade cycle. A separate millisecond clock
+will drift against it.
+
 **The rate is locked, the phase is not.** Set both sides to the same code *at the same
 time* and they stay in step indefinitely. Set them **one after the other** — two separate
 commands a few milliseconds apart — and they run out of phase, and that offset persists:
