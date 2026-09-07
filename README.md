@@ -605,8 +605,8 @@ that separates the red ring from the white LED, which is steady on there and wou
 swamp everything. The period comes from a periodogram over the container's real frame
 timestamps, not the nominal frame rate. Computing each half of the recording separately gives
 1164.73 and 1164.70 ms, agreeing to within 0.03 ms. The side peaks sit at twice and three
-times the fundamental, as a triangular waveform implies — so the fundamental was measured,
-not a harmonic.
+times the fundamental, as any non-sinusoidal periodic signal produces — so the fundamental
+was measured, not a harmonic.
 
 **This is the strongest evidence for frame coupling so far.** A free-running timer has no
 reason to match the frame period to one part in ten thousand.
@@ -614,6 +614,40 @@ reason to match the frame period to one part in ten thousand.
 Practically useful if you are rebuilding this: to run your own effects in step with the ring,
 count in frames and use ten of them for a fade cycle. A separate millisecond clock will drift
 against it.
+
+**The fade is not a triangle.** Folding the same recording onto one cycle gives the shape
+below. It is symmetric about the midpoint — the maximum sits at phase 0.500 — but the
+shoulders are steep and the top is flat: within the first 6 % of the cycle the ring goes from
+dark to 45 % brightness, then needs the remaining 44 % to reach full. There is also a short
+genuinely dark moment around phase 0.
+
+| phase | brightness |
+|---|---|
+| 0.000 | 0.000 |
+| 0.062 | 0.447 |
+| 0.125 | 0.679 |
+| 0.188 | 0.779 |
+| 0.250 | 0.841 |
+| 0.312 | 0.891 |
+| 0.375 | 0.935 |
+| 0.438 | 0.973 |
+| 0.500 | 1.000 |
+| 0.562 | 0.967 |
+| 0.625 | 0.928 |
+| 0.688 | 0.884 |
+| 0.750 | 0.830 |
+| 0.812 | 0.760 |
+| 0.875 | 0.641 |
+| 0.938 | 0.324 |
+
+(48 bins over the cycle, 42–46 cycles averaged per bin, normalised to 0…1, rotated so the
+minimum sits at phase 0. Only every third bin is listed.)
+
+**Caveat on these numbers:** this is *camera-perceived* brightness. The transfer function of
+the recording phone is unknown; to drive an LED at the same visible shape the values need
+raising to the power of the camera's gamma (2.2 as an sRGB guess gives a duty cycle of 0.43
+at phase 0.125). The *shape* — steep shoulders, flat top, symmetric — does not depend on that
+assumption; the exact numbers do.
 
 *An earlier figure of 7/6 s = 1166.67 ms is 0.16 % too high and is superseded.*
 

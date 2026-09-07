@@ -625,8 +625,8 @@ Scheinwerfer — das trennt den roten Ring von der weißen LED, die dort konstan
 sonst alles überstrahlen würde. Die Periode aus einem Periodogramm über die echten
 Bildzeitstempel des Containers, nicht über die nominelle Bildrate. Beide Aufnahmehälften
 einzeln gerechnet ergeben 1164,73 und 1164,70 ms, stimmen also auf 0,03 ms überein. Die
-Nebengipfel liegen beim Doppelten und Dreifachen der Grundfrequenz, wie es ein
-dreieckförmiger Verlauf erwarten lässt — es wurde also der Grundton getroffen und keine
+Nebengipfel liegen beim Doppelten und Dreifachen der Grundfrequenz, wie es jedes nicht
+sinusförmige periodische Signal hervorbringt — es wurde also der Grundton getroffen und keine
 Oberwelle.
 
 **Das ist der bislang stärkste Beleg für die Rahmenkopplung.** Eine Übereinstimmung auf ein
@@ -635,6 +635,40 @@ Zehntausendstel der Rahmenperiode hat ein freilaufender Zeitgeber keinen Grund z
 Praktisch nützlich für Nachbauer: wer eigene Effekte zum Ring synchron laufen lassen will,
 rechnet in Rahmen und nimmt zehn davon für einen Fade-Zyklus. Über eine eigene
 Millisekunden-Uhr wandern die beiden auseinander.
+
+**Der Fade ist kein Dreieck.** Dieselbe Aufnahme auf einen Zyklus gefaltet ergibt den Verlauf
+unten. Er ist symmetrisch zur Mitte — das Maximum liegt bei Phase 0,500 —, hat aber steile
+Flanken und ein flaches Dach: in den ersten 6 % des Zyklus geht der Ring von dunkel auf 45 %
+Helligkeit, für den Rest bis voll braucht er die verbleibenden 44 %. Um Phase 0 gibt es
+zusätzlich einen kurzen wirklich dunklen Moment.
+
+| Phase | Helligkeit |
+|---|---|
+| 0,000 | 0,000 |
+| 0,062 | 0,447 |
+| 0,125 | 0,679 |
+| 0,188 | 0,779 |
+| 0,250 | 0,841 |
+| 0,312 | 0,891 |
+| 0,375 | 0,935 |
+| 0,438 | 0,973 |
+| 0,500 | 1,000 |
+| 0,562 | 0,967 |
+| 0,625 | 0,928 |
+| 0,688 | 0,884 |
+| 0,750 | 0,830 |
+| 0,812 | 0,760 |
+| 0,875 | 0,641 |
+| 0,938 | 0,324 |
+
+(48 Klassen über den Zyklus, je Klasse 42–46 Zyklen gemittelt, auf 0…1 normiert und so
+gedreht, dass das Minimum bei Phase 0 liegt. Aufgeführt ist nur jede dritte Klasse.)
+
+**Vorbehalt zu den Zahlen:** das ist *kamerawahrgenommene* Helligkeit. Die Übertragungskennlinie
+des aufnehmenden Telefons ist unbekannt; wer eine LED auf denselben sichtbaren Verlauf bringen
+will, muss die Werte mit dem Kameragamma potenzieren (mit 2,2 als sRGB-Annahme ergibt sich bei
+Phase 0,125 ein Tastverhältnis von 0,43). Die *Form* — steile Flanken, flaches Dach,
+symmetrisch — hängt von dieser Annahme nicht ab, die genauen Zahlen schon.
 
 *Eine frühere Angabe von 7/6 s = 1166,67 ms ist um 0,16 % zu hoch und damit überholt.*
 
