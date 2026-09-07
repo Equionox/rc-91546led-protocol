@@ -610,21 +610,33 @@ aus einem freilaufenden Zähler kommt. Das passt zum nächsten Abschnitt: dass e
 Codewechsel die Animation zurücksetzt, ist bei einer rahmengetriebenen Animation genau die
 zu erwartende Folge — es wäre derselbe Mechanismus.
 
-**Der Fade dauert vermutlich zehn Rahmen.** Für den Zyklus des roten Rings bei `{3,4}`
-liegt ein Wert von **7/6 s = 1166,7 ms** vor, ermittelt in einer früheren Arbeitssitzung;
-**die Messmethode ist nicht dokumentiert.** Die Rahmenperiode ist 116,478 ms, das sind
-**10,02 Rahmen** — mit 0,2 % Abweichung genau zehn. Eine glatte Rahmenzahl statt einer
-krummen Millisekundenzahl wäre ein weiteres Argument dafür, dass die Ring-Animationen aus
-dem Rahmenstrom getrieben werden.
+**Der Fade dauert genau zehn Rahmen.** Am 2026-09-07 aus einer Videoaufnahme bestimmt:
+**1164,79 ms**, das sind bei einer Rahmenperiode von 116,478 ms **10,0001 Rahmen** —
+Abweichung 0,001 %.
 
-*Nicht unabhängig nachgeprüft.* Wer es belastbar machen will, zählt die Zyklen über eine
-längere Zeit gegen eine Uhr — etwa 30 Durchläufe — und teilt.
+| | Wert | Abweichung von 10 Rahmen |
+|---|---|---|
+| gemessen | 1164,790 ms | +0,001 % |
+| 10 Rahmen | 1164,78 ms | — |
 
+**Methode:** 70,7 s Video des Scheinwerfers bei laufendem `{3,4}`, feste Kamera, sonst alle
+Lampen aus. Je Einzelbild der Mittelwert von **Rot minus Blau** über einen Ausschnitt um den
+Scheinwerfer — das trennt den roten Ring von der weißen LED, die dort konstant leuchtet und
+sonst alles überstrahlen würde. Die Periode aus einem Periodogramm über die echten
+Bildzeitstempel des Containers, nicht über die nominelle Bildrate. Beide Aufnahmehälften
+einzeln gerechnet ergeben 1164,73 und 1164,70 ms, stimmen also auf 0,03 ms überein. Die
+Nebengipfel liegen beim Doppelten und Dreifachen der Grundfrequenz, wie es ein
+dreieckförmiger Verlauf erwarten lässt — es wurde also der Grundton getroffen und keine
+Oberwelle.
 
+**Das ist der bislang stärkste Beleg für die Rahmenkopplung.** Eine Übereinstimmung auf ein
+Zehntausendstel der Rahmenperiode hat ein freilaufender Zeitgeber keinen Grund zu treffen.
 
 Praktisch nützlich für Nachbauer: wer eigene Effekte zum Ring synchron laufen lassen will,
 rechnet in Rahmen und nimmt zehn davon für einen Fade-Zyklus. Über eine eigene
 Millisekunden-Uhr wandern die beiden auseinander.
+
+*Eine frühere Angabe von 7/6 s = 1166,67 ms ist um 0,16 % zu hoch und damit überholt.*
 
 **Die Rate ist gekoppelt, die Phase nicht.** Beide Seiten *gleichzeitig* auf denselben Code
 gesetzt laufen dauerhaft im Gleichschritt. Werden sie **nacheinander** gesetzt — zwei

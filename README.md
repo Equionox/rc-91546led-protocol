@@ -590,20 +590,32 @@ from a free-running counter. That fits the next section: for a frame-driven anim
 code change restarting it is exactly what you would expect — it would be the same
 mechanism.
 
-**The fade probably lasts ten frames.** A figure of **7/6 s = 1166.7 ms** exists for the
-cycle of the red ring on `{3,4}`, determined in an earlier working session; **the method is
-not on record.** The frame period is 116.478 ms, which makes it **10.02 frames** — exactly
-ten, to within 0.2 %. A whole number of frames rather than a round number of milliseconds
-would be another argument that the ring animations are driven by the frame stream.
+**The fade lasts exactly ten frames.** Determined from a video recording on 2026-09-07:
+**1164.79 ms**, which at a frame period of 116.478 ms is **10.0001 frames** — a deviation of
+0.001 %.
 
-*Not independently verified.* To put it on firm ground, count cycles against a clock over a
-longer stretch — say 30 of them — and divide.
+| | value | deviation from 10 frames |
+|---|---|---|
+| measured | 1164.790 ms | +0.001 % |
+| 10 frames | 1164.78 ms | — |
 
+**Method:** 70.7 s of video of the headlight with `{3,4}` running, camera fixed, all other
+lamps off. Per video frame, the mean of **red minus blue** over a crop around the headlight —
+that separates the red ring from the white LED, which is steady on there and would otherwise
+swamp everything. The period comes from a periodogram over the container's real frame
+timestamps, not the nominal frame rate. Computing each half of the recording separately gives
+1164.73 and 1164.70 ms, agreeing to within 0.03 ms. The side peaks sit at twice and three
+times the fundamental, as a triangular waveform implies — so the fundamental was measured,
+not a harmonic.
 
+**This is the strongest evidence for frame coupling so far.** A free-running timer has no
+reason to match the frame period to one part in ten thousand.
 
-Practically useful if you are rebuilding this: to run your own effects in step with the
-ring, count in frames and use ten of them for a fade cycle. A separate millisecond clock
-will drift against it.
+Practically useful if you are rebuilding this: to run your own effects in step with the ring,
+count in frames and use ten of them for a fade cycle. A separate millisecond clock will drift
+against it.
+
+*An earlier figure of 7/6 s = 1166.67 ms is 0.16 % too high and is superseded.*
 
 **The rate is locked, the phase is not.** Set both sides to the same code *at the same
 time* and they stay in step indefinitely. Set them **one after the other** — two separate
