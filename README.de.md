@@ -721,6 +721,15 @@ Zwei Konsequenzen:
   `3,5` bringt dagegen die Lauflicht-Animation mit, die sich nicht unterdrücken
   lässt und bei jedem Takt neu beginnt.
 
+**Wo der Neustart die Phase hinlegt.** Die Animation läuft im Rahmen *nach* dem Codewechsel
+wieder an, und sie beginnt an ihrem **dunklen** Punkt. Beides folgt aus einer Gegenprobe: eine
+zweite rote Lampe wurde mit eigener PWM auf dem gemessenen Verlauf gefahren, ihr Zyklus in
+Rahmen gezählt und ihr Nullpunkt auf `Rahmen_des_Codewechsels + 1` gelegt, Phase 0 am dunklen
+Punkt. Damit laufen Lampe und Ring ohne Korrekturglied im Gleichschritt — die beiden Annahmen
+treffen also zu. Beurteilt wurde nach Augenmaß über einige Minuten; ein Restfehler von einigen
+Prozent des Zyklus wäre dabei nicht aufgefallen, eine Genauigkeit unterhalb eines Rahmens ist
+damit nicht belegt.
+
 ---
 ## Verworfene Thesen
 

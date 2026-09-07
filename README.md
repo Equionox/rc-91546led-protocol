@@ -697,6 +697,14 @@ Two consequences:
   `4,8` (everything on) and the OFF code are steady. `3,5` brings the chase
   animation with it, which cannot be suppressed and restarts on every switch.
 
+**Where the restart puts the phase.** The animation resumes in the frame *after* the code
+change, and it starts at its **dark** point. Both follow from a control experiment: a
+second red lamp was driven by our own PWM with the measured curve, its cycle counted in
+frames and its zero point pinned to `frame_of_code_change + 1`, phase 0 at the dark point.
+With that and no correction term, the lamp and the ring stay in step — meaning the two
+assumptions are right. This was judged by eye over a couple of minutes, so a residual error
+of a few percent of the cycle would not have shown up; sub-frame precision is not claimed.
+
 ---
 ## What was ruled out
 
